@@ -3,195 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NELYESS - Gestión Derechos ARCO</title>
+    <title>NELYESS - Derechos ARCO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #004a99;
-            --secondary: #3b82f6;
-            --success: #10b981;
-            --error: #ef4444;
-            --bg: #f8fafc;
+            --secondary: #3B82F6;
+            --bg-page: #f8fafc;
+            --text-main: #334155;
             --text-dark: #0f172a;
-            --text-light: #475569;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-light); line-height: 1.6; }
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg-page); 
+            color: var(--text-main); 
+            line-height: 1.7;
+            padding-bottom: 50px;
+        }
 
-        /* Navegación */
-        nav { background: var(--primary); padding: 15px 5%; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .btn-back { color: white; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        /* Cabecera Estilo Dashboard */
+        nav { 
+            background: var(--primary); 
+            padding: 15px 5%; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        .btn-back { color: white; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; }
 
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
-        /* Tarjetas de Secciones */
-        .section-card { background: white; border-radius: 16px; padding: 35px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
-        .section-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+        /* Tarjetas de Contenido Profesional */
+        .card-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
 
-        h2.main-title { color: var(--text-dark); text-transform: uppercase; margin-bottom: 20px; font-size: 1.6rem; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        /* Estilo de Títulos Originales */
+        .header-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            border-left: 6px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        h3 { color: var(--text-dark); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; font-size: 18px; }
         
-        /* Grid de Derechos ARCO */
-        .arco-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin: 25px 0; }
-        .arco-mini-card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .arco-mini-card:hover { transform: translateY(-5px); border-color: var(--secondary); }
-        .arco-mini-card h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 10px; }
-
-        /* Tablas Profesionales */
-        .table-res { overflow-x: auto; margin: 20px 0; border-radius: 12px; border: 1px solid #e2e8f0; }
+        /* Tablas */
+        .table-wrapper { overflow-x: auto; margin: 20px 0; border: 1px solid #e2e8f0; border-radius: 12px; }
         table { width: 100%; border-collapse: collapse; background: white; min-width: 600px; }
-        th { background: #f1f5f9; color: var(--text-dark); padding: 15px; text-align: left; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; font-weight: 500; }
-        .highlight-blue { color: var(--secondary); font-weight: 700; }
+        th { background: #f8fafc; padding: 15px; text-align: left; color: #64748B; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
 
-        /* Plantilla Formulario */
-        .plantilla-box { background: #f1f5f9; padding: 25px; border-radius: 12px; border: 1px solid #cbd5e1; }
-        .form-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--primary); min-width: 200px; }
-        input, textarea { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-family: inherit; }
+        /* Plantilla Interactiva (Sin cambios en campos) */
+        .plantilla-container { background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #cbd5e1; }
+        .form-group { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        label { font-size: 14px; font-weight: 700; color: var(--primary); white-space: nowrap; }
+        input, textarea { flex: 1; min-width: 250px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; }
 
-        .btn-group { display: flex; gap: 15px; margin-top: 25px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: 0.3s; }
-        .btn-copy { background: var(--primary); color: white; }
+        .btn-copy { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s; }
         .btn-copy:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        .btn-clear { background: #e2e8f0; color: var(--text-light); }
 
         /* Imágenes y Alertas */
-        .img-container { text-align: center; margin: 25px 0; }
-        .img-container img { max-width: 100%; border-radius: 12px; cursor: zoom-in; border: 2px solid #f1f5f9; transition: 0.3s; }
-        .alert-box { background: #eff6ff; border-left: 5px solid var(--secondary); padding: 20px; border-radius: 8px; margin: 20px 0; font-weight: 600; color: #1e40af; }
+        .img-box { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin: 25px 0; text-align: center; }
+        .img-box img { max-width: 100%; cursor: zoom-in; transition: 0.3s; }
+        .alert-banner { background-color: #EFF6FF; border-left: 5px solid var(--secondary); padding: 15px 25px; border-radius: 8px; font-weight: 700; color: #1E40AF; margin: 20px 0; }
 
-        .status-no { color: var(--error); font-weight: 700; }
-        .status-si { color: var(--success); font-weight: 700; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-        @media (max-width: 768px) { .form-group { flex-direction: column; align-items: stretch; } }
+        /* Modal Zoom */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
+        .modal img { max-width: 95%; max-height: 95%; object-fit: contain; }
     </style>
 </head>
 <body>
 
     <nav>
         <a href="posventa.html" class="btn-back"><i class="fas fa-arrow-left"></i> VOLVER A POSVENTA</a>
-        <span style="color: white; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">NELYESS OPERATIVO</span>
+        <span style="color: white; font-weight: 800;">NELYESS OPERATIVO</span>
     </nav>
 
     <div class="container">
 
-        <div class="section-card">
-            <h2 class="main-title">I. Definición Derecho ARCO</h2>
+        <div class="card-section">
+            <h1 class="header-title">DEFINICIÓN</h1>
             <p>Los Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) son el conjunto de derechos a través de los cuales la <strong>Ley N° 29733 – Ley de Protección de Datos Personales</strong>, garantiza a las personas el poder de control sobre sus datos personales.</p>
-            
-            <div class="arco-grid">
-                <div class="arco-mini-card"><h3>Acceso</h3><p>Derecho a saber qué datos tienen sobre ti y su uso.</p></div>
-                <div class="arco-mini-card"><h3>Rectificación</h3><p>Derecho a modificar datos erróneos o incompletos.</p></div>
-                <div class="arco-mini-card"><h3>Cancelación</h3><p>Derecho a suprimir datos cuando la finalidad concluyó.</p></div>
-                <div class="arco-mini-card"><h3>Oposición</h3><p>Derecho a oponerse al uso por generar perjuicio.</p></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="background:#f1f5f9; padding:20px; border-radius:10px;"><strong>Acceso:</strong> El derecho a saber qué datos personales tienen sobre ti...</div>
+                <div style="background:#f1f5f9; padding:20px; border-radius:10px;"><strong>Rectificación:</strong> El derecho a modificar y actualizar tus datos personales...</div>
+                <div style="background:#f1f5f9; padding:20px; border-radius:10px;"><strong>Cancelación:</strong> El derecho a cancelar el uso de tus datos personales...</div>
+                <div style="background:#f1f5f9; padding:20px; border-radius:10px;"><strong>Oposición:</strong> El derecho a oponerte al uso de tus datos...</div>
             </div>
-
-            <div class="alert-box">
-                <ul style="list-style: none; font-size: 0.9rem;">
-                    <li>✓ Aplica solo para personas naturales.</li>
-                    <li>✓ Solicitud vía Centros de Atención o Web BITEL.</li>
-                    <li>✓ Correo para clientes: solicitudespdp@bitel.com.pe</li>
-                </ul>
-            </div>
+            <ul style="margin-top: 25px; padding-left: 20px;">
+                <li>Este proceso aplica para la atención de solicitudes presentadas por los clientes o consumidores (solo personas naturales).</li>
+                <li>Podrá solicitarlo en los Centros de Atención BITEL o en la página Web de BITEL.</li>
+                <li>Es posible gestionar la modificación de varios datos personales con la presentación de una sola solicitud...</li>
+                <li>El cliente podrá solicitar ejercer su derecho Arco enviando un correo a <strong>solicitudespdp@bitel.com.pe</strong></li>
+                <li>Al finalizar, enviar a los correos <strong>atenciondereclamos@bitel.com.pe</strong> con copia a <strong>control.procesos@bitel.com.pe</strong></li>
+            </ul>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">II. Plazos de Atención</h2>
-            <p>El departamento de reclamos tiene un plazo máximo de <strong>2 días hábiles</strong> para validar la solicitud.</p>
-            <div class="table-res">
+        <div class="card-section">
+            <h1 class="header-title">II. Plazos de atención</h1>
+            <p>El departamento de reclamos tiene un plazo máximo de <strong>2 días hábiles</strong> desde la presentación de la solicitud para validar con las áreas involucradas.</p>
+            <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>Solicitud</th><th>Plazo de Atención</th></tr></thead>
+                    <thead><tr><th>Solicitud</th><th>Plazo de atención</th></tr></thead>
                     <tbody>
-                        <tr><td>Derecho de información</td><td class="highlight-blue">8 días hábiles</td></tr>
-                        <tr><td>Derecho de acceso</td><td class="highlight-blue">20 días hábiles</td></tr>
-                        <tr><td>Rectificación, Cancelación u Oposición</td><td class="highlight-blue">10 días hábiles</td></tr>
+                        <tr><td>Derecho de información</td><td>8 días hábiles</td></tr>
+                        <tr><td>Derecho de acceso</td><td>20 días hábiles</td></tr>
+                        <tr><td>Derecho de rectificación, cancelación u oposición</td><td>10 días hábiles</td></tr>
                     </tbody>
                 </table>
             </div>
-            <p style="font-size: 0.8rem; font-style: italic;">* Días hábiles contados desde el día siguiente de presentada la solicitud.</p>
+            <p style="font-size: 13px; color: #64748b;">* Días hábiles contados desde el día siguiente de presentada la solicitud.</p>
+            <div style="margin-top:20px;">
+                <p>✓ Se podrá justificar la ampliación comunicando al titular conforme al Art. 57.</p>
+                <p>✓ En caso de incumplimiento de requisitos, se formula observación en 5 días.</p>
+                <p>✓ Información insuficiente: se requiere información adicional en 7 días hábiles.</p>
+            </div>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">III. Validación de Cliente</h2>
-            <div class="table-res">
+        <div class="card-section">
+            <h1 class="header-title">VALIDACIÓN CLIENTE</h1>
+            <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>¿Quién se presenta?</th><th>Documentos a validar</th></tr></thead>
+                    <thead><tr><th>¿Quién se presenta en la tienda?</th><th>Documentos a validar</th></tr></thead>
                     <tbody>
-                        <tr><td><strong>Titular</strong></td><td>DNI, CE, PTP, Pasaporte (No importa si está caducado)</td></tr>
-                        <tr><td><strong>Tercera Persona</strong></td><td>DNI del representante + Carta poder legalizada (antigüedad máx. 1 mes).</td></tr>
+                        <tr><td><strong>Titular</strong></td><td>DNI, CE, PTP, Pasaporte</td></tr>
+                        <tr><td><strong>Tercera Persona (RR.LL)</strong></td><td>DNI de la persona + Carta poder legalizada (máx. 1 mes antigüedad).</td></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="alert-box" style="background: #fff3f3; color: #c00; border-color: #f88;">
-                <strong>Regla Biométrica:</strong> Verificar que la mano esté libre de aparatos y comparar datos con DNI físico antes de la captura.
-            </div>
+            <div class="alert-banner">Si el DNI se encuentra caducado no será impedimento.</div>
+            <h3>REGLAS PARA LA VALIDACIÓN BIOMÉTRICA</h3>
+            <p>1. Verificar que la mano del usuario se encuentre libre de cualquier aparato.</p>
+            <p>2. Validar y comparar los datos del cliente con los del DNI físico.</p>
+            <p>3. Objetivo: Certeza que su huella no será replicada en una goma o adhesivo.</p>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">IV. Proceso de Atención y Llenado</h2>
-            <p>El agente debe orientar y entregar la solicitud. El cliente entrega copia de DNI y sustentos.</p>
-            <div class="img-container">
+        <div class="card-section">
+            <h1 class="header-title">PROCESO ATENCIÓN</h1>
+            <p>El agente debe orientar y brindar la solicitud. El solicitante entregará copia de DNI y sustentos.</p>
+            <h3>Requisitos de la solicitud (Art. 50):</h3>
+            <ul style="padding-left: 20px;">
+                <li>Nombres y apellidos del titular del derecho y acreditación.</li>
+                <li>Petición concreta que da lugar a la solicitud.</li>
+                <li>Domicilio y dirección electrónica para notificaciones.</li>
+                <li>Fecha y firma del solicitante.</li>
+                <li>Documentos que sustenten la petición.</li>
+            </ul>
+            <div class="img-box" style="margin-top:30px;">
                 <p><strong>Ejemplo de Solicitud con Sello y Firma:</strong></p>
-                <img src="https://i.postimg.cc/prs08KXH/Captura-de-pantalla-2026-03-11-160959.png" onclick="openZoom(this.src)">
+                <img src="https://i.postimg.cc/prs08KXH/Captura-de-pantalla-2026-03-11-160959.png" onclick="zoom(this)">
             </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="https://docs.google.com/spreadsheets/d/1gzBe69d-y_Kaoq88Owwyn6OwtA04RKhs/edit?gid=255396251#gid=255396251" target="_blank" style="background: #10b981; color: white; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: 800;">
-                    <i class="fas fa-file-excel"></i> DESCARGAR SOLICITUD EXCEL
-                </a>
+            <div style="text-align: center;">
+                <a href="https://docs.google.com/spreadsheets/d/1gzBe69d-y_Kaoq88Owwyn6OwtA04RKhs/edit?gid=255396251#gid=255396251" target="_blank" style="display:inline-block; background: #10B981; color:white; padding:15px 25px; border-radius:50px; text-decoration:none; font-weight:800; margin-top:20px;">DESCARGAR SOLICITUD EXCEL</a>
             </div>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">V. Tipificación e Ingreso al BCCS</h2>
-            <p>Ruta: Operación → Operación → Transacción de la línea – Tratamiento de Datos Personales</p>
-            <div class="img-container"><img src="https://i.postimg.cc/05ppzsxK/Captura-de-pantalla-2026-03-06-185709.png" onclick="openZoom(this.src)"></div>
+        <div class="card-section">
+            <h1 class="header-title">TIPIFICACIÓN</h1>
+            <p>Al ingresar al Registry History, selecciona <strong>"Start Registry"</strong>.</p>
+            <div class="img-box"><img src="https://i.postimg.cc/59RMQZ3X/Captura-de-pantalla-2026-03-06-190809.png" onclick="zoom(this)"></div>
+            <p>Ruta: <strong>Operación → Operación → Transacción de la línea – Tratamiento de Datos Personales</strong></p>
             
-            <form id="arcoForm" class="plantilla-box">
-                <div class="form-group"><label>*CAB:</label><input type="text" id="cab"></div>
-                <div class="form-group"><label>*Agente:</label><input type="text" id="agente"></div>
-                <div class="form-group"><label>*Línea:</label><input type="text" id="linea"></div>
-                <div class="form-group"><label>*Nombre Cliente:</label><input type="text" id="nombre"></div>
-                <div class="form-group"><label>*Tipo/N° Documento:</label><input type="text" id="dni"></div>
-                <div class="form-group"><label>*Derecho solicitado:</label><input type="text" id="tipo"></div>
-                <div class="form-group" style="flex-direction: column; align-items: start;">
-                    <label>*Descripción:</label><textarea id="desc" rows="3" style="width:100%"></textarea>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-copy" onclick="copyArco()">COPIAR PLANTILLA</button>
-                    <button type="button" class="btn btn-clear" onclick="document.getElementById('arcoForm').reset()">LIMPIAR</button>
-                </div>
+            <form id="arcoForm" class="plantilla-container" style="margin-top:20px;">
+                <div class="form-group"><label>*CAB :</label><input type="text" id="i1"></div>
+                <div class="form-group"><label>*Agente :</label><input type="text" id="i2"></div>
+                <div class="form-group"><label>*Línea que presenta el problema :</label><input type="text" id="i3"></div>
+                <div class="form-group"><label>*Nombre del cliente :</label><input type="text" id="i4"></div>
+                <div class="form-group"><label>*Tipo y número de documento :</label><input type="text" id="i5"></div>
+                <div class="form-group"><label>*Correo electrónico :</label><input type="text" id="i6"></div>
+                <div class="form-group"><label>*Dirección del cliente :</label><input type="text" id="i7"></div>
+                <div class="form-group"><label>*Fecha y hora de solicitud :</label><input type="text" id="i8"></div>
+                <div class="form-group"><label>*Teléf. ref. del Agente :</label><input type="text" id="i9"></div>
+                <div class="form-group"><label>*Tipo de Derecho ARCO solicitado :</label><input type="text" id="i10"></div>
+                <div class="form-group" style="flex-direction:column; align-items:flex-start;"><label>*Descripción :</label><textarea id="i11" rows="3" style="width:100%"></textarea></div>
+                <div class="form-group"><label>*Otros descartes :</label><input type="text" id="i12"></div>
+                <div class="form-group"><label>*Numero de ID del CC :</label><input type="text" id="i13"></div>
+                <button type="button" class="btn-copy" onclick="copyFull()">COPIAR PLANTILLA COMPLETA</button>
             </form>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">VI. Escalamiento por Correo</h2>
+        <div class="card-section">
+            <h1 class="header-title">ESCALAMIENTO POR CORREO</h1>
             <p>Enviar a: <strong>backreclamos@efectivabpo.com</strong> y <strong>atenciondereclamos@bitel.com.pe</strong></p>
-            <div class="alert-box">
-                <strong>Asunto:</strong> Solicitud Derecho ARCO_ (ID del CC)
-            </div>
-            <div class="img-container">
-                <p><strong>Ejemplo de cuerpo de correo:</strong></p>
-                <img src="https://i.postimg.cc/D0B06zfM/Captura-de-pantalla-2026-03-07-130225.png" onclick="openZoom(this.src)">
-            </div>
+            <p>Asunto: <strong>Solicitud Derecho ARCO_ (ID)</strong></p>
+            <div class="img-box"><img src="https://i.postimg.cc/D0B06zfM/Captura-de-pantalla-2026-03-07-130225.png" onclick="zoom(this)"></div>
         </div>
 
-        <div class="section-card">
-            <h2 class="main-title">VII. Herramientas de Apoyo</h2>
-            <div class="table-res">
+        <div class="card-section">
+            <h1 class="header-title">HERRAMIENTAS DE APOYO</h1>
+            <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>Derechos ARCO - Tipo de Error</th><th>Estado</th></tr></thead>
+                    <thead><tr><th>Derechos ARCO</th><th>Tipos de Error</th></tr></thead>
                     <tbody>
-                        <tr><td>Error en tipificación - Ruta incorrecta</td><td class="status-no">No subsanable</td></tr>
-                        <tr><td>No genera tipificación / Envío fuera de fecha</td><td class="status-no">No subsanable</td></tr>
-                        <tr><td>No escala (No selecciona transfer to BO)</td><td class="status-no">No subsanable</td></tr>
-                        <tr><td>No envía correo / Plantilla o asunto incorrecto</td><td class="status-si">Subsanable</td></tr>
-                        <tr><td>Adjuntar documentos ilegibles o errados</td><td class="status-si">Subsanable</td></tr>
+                        <tr><td>Error en tipificación - Ruta incorrecta</td><td style="color:red; font-weight:bold;">No subsanable</td></tr>
+                        <tr><td>No genera tipificación</td><td style="color:red; font-weight:bold;">No subsanable</td></tr>
+                        <tr><td>Envío fuera de fecha</td><td style="color:red; font-weight:bold;">No subsanable</td></tr>
+                        <tr><td>No envía correo</td><td style="color:green; font-weight:bold;">Subsanable</td></tr>
+                        <tr><td>Documentos errados o ilegibles</td><td style="color:green; font-weight:bold;">Subsanable</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -199,30 +222,26 @@
 
     </div>
 
-    <div id="zoomModal" class="modal" onclick="this.style.display='none'"><img id="zoomImg"></div>
+    <div id="modal" class="modal" onclick="this.style.display='none'"><img id="modalImg"></div>
 
     <script>
-        function openZoom(src) {
-            document.getElementById('zoomModal').style.display = 'flex';
-            document.getElementById('zoomImg').src = src;
-        }
-
-        function copyArco() {
-            let form = document.getElementById('arcoForm');
-            let text = "SOLICITUD DERECHO ARCO\n" +
-                       "*CAB: " + document.getElementById('cab').value + "\n" +
-                       "*Agente: " + document.getElementById('agente').value + "\n" +
-                       "*Línea: " + document.getElementById('linea').value + "\n" +
-                       "*Cliente: " + document.getElementById('nombre').value + "\n" +
-                       "*Doc: " + document.getElementById('dni').value + "\n" +
-                       "*Tipo Derecho: " + document.getElementById('tipo').value + "\n" +
-                       "*Descripción: " + document.getElementById('desc').value;
-            
+        function zoom(img) { document.getElementById('modal').style.display='flex'; document.getElementById('modalImg').src=img.src; }
+        
+        function copyFull() {
+            const labels = [
+                "*CAB :", "*Agente :", "*Línea :", "*Nombre :", "*Tipo y N° Doc :",
+                "*Correo :", "*Dirección :", "*Fecha/Hora :", "*Teléf. Agente :",
+                "*Tipo ARCO :", "*Descripción :", "*Otros descartes :", "*ID CC :"
+            ];
+            let text = "SOLICITUD DERECHOS ARCO\n";
+            for(let i=1; i<=13; i++) {
+                text += labels[i-1] + " " + document.getElementById('i'+i).value + "\n";
+            }
             const area = document.createElement("textarea");
             area.value = text; document.body.appendChild(area);
             area.select(); document.execCommand("copy");
             document.body.removeChild(area);
-            alert("¡Plantilla copiada correctamente!");
+            alert("Plantilla original copiada al portapapeles.");
         }
     </script>
 </body>
