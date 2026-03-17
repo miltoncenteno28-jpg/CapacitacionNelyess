@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Casos 9018 - Nelyess</title>
+    <style>
+        :root {
+            --primary-color: #00bcd4;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { color: var(--primary-color); text-align: center; }
+
+        .selector-group { margin-bottom: 25px; }
+
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary-color); }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #252525;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        button {
+            background-color: var(--primary-color);
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #00acc1; transform: translateY(-2px); }
+
+        #output-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #111;
+            border-left: 5px solid var(--primary-color);
+            white-space: pre-wrap;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 Plantillas Caso 9018</h1>
+    
+    <div class="selector-group">
+        <label for="templateSelector">Selecciona el tipo de incidencia:</label>
+        <select id="templateSelector" onchange="generateForm()">
+            <option value="">-- Seleccione una opción --</option>
+            <option value="general">Plantilla General</option>
+            <option value="ajuste">Ajuste de Factura</option>
+            <option value="a-paq">Activación de Paquetes</option>
+            <option value="estado">Estado de Línea (HLR/OCS)</option>
+            <option value="p-vas">Problema Servicios VAS</option>
+            <option value="llamadas">Inconveniente con Llamadas</option>
+            <option value="internet">Problemas de Navegación</option>
+        </select>
+    </div>
+
+    <form id="dynamicForm">
+        <div id="formFields" class="form-grid">
+            </div>
+    </form>
+
+    <button id="copyBtn" style="display:none;" onclick="copyToClipboard()">Copiar Información Formateada</button>
+    <div id="output-area"></div>
+</div>
+
+<script>
+    const templates = {
+        general: [
+            {label: "Código de tienda/canal", id: "tienda"},
+            {label: "Línea con problema", id: "linea"},
+            {label: "Nombre del cliente", id: "cliente"},
+            {label: "Fecha y hora del problema", id: "fecha", type: "datetime-local"},
+            {label: "Descripción del problema", id: "desc", type: "textarea", full: true},
+            {label: "Descartes realizados", id: "descartes", type: "textarea", full: true}
+        ],
+        ajuste: [
+            {label: "Jefe que autoriza", id: "jefe"},
+            {label: "Línea afectada", id: "linea"},
+            {label: "Monto a ajustar (S/)", id: "monto"},
+            {label: "Periodo afectado", id: "periodo"},
+            {label: "Motivo (Sistema/Operativo)", id: "motivo"},
+            {label: "Descripción del caso", id: "desc", type: "textarea", full: true}
+        ],
+        estado: [
+            {label: "Línea", id: "linea"},
+            {label: "Mensaje de Error", id: "error"},
+            {label: "Error a corregir (HLR/OCS)", id: "corregir"},
+            {label: "Descripción", id: "desc", type: "textarea", full: true}
+        ],
+        llamadas: [
+            {label: "Línea", id: "linea"},
+            {label: "Plan", id: "plan"},
+            {label: "RoutingCategory (3/7/10)", id: "routing"},
+            {label: "Dirección completa", id: "dir", full: true},
+            {label: "Descripción del fallo", id: "desc", type: "textarea", full: true}
+        ]
+        // Se pueden añadir todas las demás del Excel siguiendo este patrón
+    };
+
+    function generateForm() {
+        const selection = document.getElementById('templateSelector').value;
+        const container = document.getElementById('formFields');
+        const copyBtn = document.getElementById('copyBtn');
+        container.innerHTML = '';
+        
+        if (!selection) {
+            copyBtn.style.display = 'none';
+            return;
+        }
+
+        templates[selection].forEach(field => {
+            const div = document.createElement('div');
+            if (field.full) div.className = 'full-width';
+
+            const label = document.createElement('label');
+            label.innerText = field.label;
+            
+            let input;
+            if (field.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 3;
+            } else {
+                input = document.createElement('input');
+                input.type = field.type || 'text';
+            }
+            input.id = field.id;
+            input.placeholder = `Escriba aquí...`;
+
+            div.appendChild(label);
+            div.appendChild(input);
+            container.appendChild(div);
+        });
+        
+        copyBtn.style.display = 'block';
+    }
+
+    function copyToClipboard() {
+        const selection = document.getElementById('templateSelector').value;
+        const fields = templates[selection];
+        let textOutput = `*** CASO 9018 - ${selection.toUpperCase()} ***\n\n`;
+        
+        fields.forEach(field => {
+            const val = document.getElementById(field.id).value;
+            textOutput += `${field.label}: ${val}\n`;
+        });
+
+        navigator.clipboard.writeText(textOutput).then(() => {
+            const out = document.getElementById('output-area');
+            out.style.display = 'block';
+            out.innerText = "¡Copiado al portapapeles!\n\n" + textOutput;
+            alert("Información copiada correctamente");
+        });
+    }
+</script>
+
+</body>
+</html>
