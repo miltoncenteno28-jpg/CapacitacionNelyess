@@ -1,342 +1,442 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procedimiento de Cuestionamiento de Bloqueo</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Roboto+Condensed:wght@700&family=Roboto:wght@900&display=swap');
-
-        :root {
-            --primary: #1e293b;
-            --primary-blue: #004a99;
-            --accent: #f59e0b;
-            --accent-yellow: #facc15;
-            --text-light: #ffffff;
-            --bg-card: #ffffff;
-            --text-dark: #1e293b;
-            --bg-light: #f8fafc;
-            --border-color: #cbd5e1;
-            --shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f1f5f9;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .main-wrapper {
-            max-width: 1000px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        /* --- SECCIÓN DEFINICIÓN --- */
-        .def-container {
-            background: var(--bg-card);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
-        }
-        .def-header { background: var(--primary); padding: 25px; text-align: center; border-bottom: 5px solid var(--accent); }
-        .def-header h1 { color: var(--text-light); margin: 0; font-weight: 900; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
-        .def-content { padding: 30px; }
-        .def-section-title { color: var(--accent); font-weight: 900; font-size: 1.4rem; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; }
-        .def-section-title::after { content: ""; flex: 1; height: 2px; background: #e2e8f0; margin-left: 15px; }
-        .def-list { list-style: none; padding: 0; }
-        .def-li { margin-bottom: 18px; padding-left: 35px; position: relative; line-height: 1.6; color: #334155; font-weight: 700; }
-        .def-li::before { content: "✓"; position: absolute; left: 0; top: 0; background: var(--accent); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; }
-        .def-question { color: var(--primary); font-weight: 900; margin-top: 25px; display: block; font-size: 1.1rem; text-decoration: underline var(--accent); }
-        .def-highlight { background: #f8fafc; border-left: 5px solid var(--primary); padding: 20px; margin-top: 25px; font-size: 0.95rem; color: #475569; border-radius: 0 8px 8px 0; font-weight: 700; }
-
-        /* --- SECCIÓN FLUJOGRAMA Y ESTADOS --- */
-        .flow-container { border: 2px solid #333; background: #fff; padding: 20px; }
-        .flow-header { text-align: center; color: #006666; font-family: 'Roboto Condensed', sans-serif; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; text-decoration: underline; }
-        .flow-table { display: flex; border: 1.5px solid black; margin-bottom: 40px; }
-        .flow-box { flex: 1; padding: 15px 10px; border-right: 1.5px solid black; }
-        .flow-box:last-child { border-right: none; }
-        .flow-label { color: #008080; font-size: 0.9rem; margin-bottom: 5px; }
-        .flow-text { font-size: 0.95rem; font-weight: 900; color: #000; line-height: 1.3; }
-        .rel-header { text-align: center; color: #003366; font-size: 1.1rem; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
-        .status-grid { display: grid; grid-template-columns: 1fr 1.2fr 1fr; border: 1.5px solid black; }
-        .status-item { padding: 20px 10px; border-right: 1.5px solid black; text-align: center; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; }
-        .status-item:last-child { border-right: none; }
-        .roman { display: block; font-size: 1.2rem; margin-bottom: 8px; }
-
-        /* --- SECCIÓN VALIDACIÓN GRID --- */
-        .val-banner { background: #1e3a8a; padding: 15px 30px; border-radius: 50px 0 50px 0; display: inline-block; margin-bottom: 30px; box-shadow: 4px 4px 10px rgba(0,0,0,0.2); }
-        .val-banner h1 { color: white; margin: 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 900; }
-        .val-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .val-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 15px; padding: 25px 15px; text-align: center; position: relative; min-height: 150px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .val-card::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 4px; background: #3b82f6; border-radius: 0 0 10px 10px; }
-        .val-card-text { color: #0f172a; font-size: 1rem; font-weight: 700; line-height: 1.5; }
-
-        /* --- SECCIÓN HERRAMIENTAS Y SOLICITUD --- */
-        .tool-container { background: #ffffff; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid #e2e8f0; overflow: hidden; }
-        .tool-header { background: var(--primary-blue); padding: 20px 40px; border-bottom: 5px solid var(--accent-yellow); }
-        .tool-header h1 { color: white; margin: 0; font-size: 1.8rem; text-transform: uppercase; font-weight: 900; }
-        .tool-content { padding: 40px; }
-        .tool-card { border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; }
-        .tool-q-title { color: var(--primary-blue); font-size: 1.4rem; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; margin-top: 0; }
-        .tool-list { list-style: none; padding: 0; }
-        .tool-li { position: relative; padding-left: 30px; margin-bottom: 12px; font-weight: 700; }
-        .tool-li::before { content: "✔️"; position: absolute; left: 0; top: 0; }
-        .alert-box { background: #fef2f2; border: 2px solid #fecaca; border-left: 8px solid #ef4444; padding: 20px; border-radius: 8px; color: #991b1b; font-weight: 700; display: flex; gap: 15px; align-items: center; }
-        .email-tag { display: inline-block; background: #eff6ff; color: var(--primary-blue); padding: 4px 10px; border-radius: 6px; font-weight: 900; border: 1px solid #bfdbfe; margin: 2px 0; }
-        .special-box { background: #f8fafc; border: 2px solid #cbd5e1; border-left: 8px solid var(--primary-blue); padding: 25px; border-radius: 8px; margin-top: 30px; font-weight: 600; }
-
-        /* --- SECCIONES PASO A PASO (SISTEMA) --- */
-        .step-container { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .step-header { background: var(--primary-blue); padding: 15px 30px; display: inline-block; border-radius: 0 0 30px 0; margin-bottom: 20px; }
-        .step-header h1 { color: white; margin: 0; font-size: 1.4rem; text-transform: uppercase; font-weight: 900; }
-        .step-flex { display: flex; gap: 30px; padding: 20px; align-items: center; }
-        .img-box { flex: 2; border: 2px solid #cbd5e1; border-radius: 8px; position: relative; cursor: zoom-in; }
-        .img-box img { width: 100%; display: block; border-radius: 6px; }
-        .step-instr { flex: 1; font-size: 1.1rem; line-height: 1.6; font-weight: 700; color: #1e293b; }
-        .h-path { background: #f8fafc; border-left: 4px solid var(--accent-yellow); padding: 15px; border-radius: 0 8px 8px 0; margin-top: 10px; }
-        .h-text { color: var(--primary-blue); font-weight: 900; }
-        .yellow-h { background: var(--accent-yellow); padding: 2px 5px; border-radius: 4px; }
-
-        /* --- SECCIÓN PLANTILLA (FORMULARIO) --- */
-        .form-container { background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
-        .form-header { background: var(--primary-blue); padding: 15px; text-align: center; border-bottom: 4px solid var(--accent-yellow); }
-        .form-header h1 { color: white; margin: 0; font-size: 1.4rem; text-transform: uppercase; font-weight: 900; }
-        .form-body { padding: 20px 30px; background: var(--bg-light); }
-        .form-group { display: flex; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px; }
-        .form-group label { flex: 0 0 45%; font-weight: 700; color: var(--primary-blue); font-size: 0.9rem; }
-        .form-group input, .form-group textarea, .form-group select { flex: 1; padding: 6px 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-weight: 600; font-family: 'Montserrat'; }
-        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-        .btn-copy { background: var(--primary-blue); color: white; }
-        .btn-clear { background: #e2e8f0; color: #475569; }
-
-        /* --- SECCIÓN CORREO --- */
-        .mail-simulator { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .mail-head { background: #f1f5f9; padding: 20px; border-bottom: 2px solid #e2e8f0; }
-        .mail-row { display: flex; margin-bottom: 12px; }
-        .mail-label { width: 80px; font-weight: 900; color: var(--primary-blue); }
-        .mail-tag { background: #dbeafe; color: #1e3a8a; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; margin-right: 5px; border: 1px solid #bfdbfe; }
-        .mail-body { padding: 30px; }
-        .mail-greet { font-weight: 700; color: var(--primary-blue); margin-bottom: 15px; }
-
-        /* Zoom Overlay */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
-        .overlay img { max-width: 95%; max-height: 95%; }
-
-        @media (max-width: 768px) {
-            .val-grid, .status-grid, .step-flex { grid-template-columns: 1fr; flex-direction: column; }
-            .form-group { flex-direction: column; align-items: flex-start; }
-            .form-group label { width: 100%; margin-bottom: 5px; }
-        }
-    </style>
+    <title>Procedimiento Integrado</title>
 </head>
 <body>
 
-<div class="main-wrapper">
-
-    <div class="def-container">
-        <div class="def-header"><h1>DEFINICIÓN</h1></div>
-        <div class="def-content">
-            <div class="def-section-title">Condiciones Generales</div>
-            <ul class="def-list">
-                <li class="def-li">Procedimiento iniciado por los clientes (Titulares de servicios móviles) que buscan cuestionar una acción de bloqueo de equipo o suspensión de servicio.</li>
-                <span class="def-question">¿En qué casos se puede iniciar este procedimiento?</span>
-                <li class="def-li">Cuando el OSIPTEL ha determinado la invalidez o adulteración de un IMEI y ordene el bloqueo del equipo y del servicio.</li>
-                <li class="def-li">Cuando se bloquee el equipo y servicio por el reporte de sustracción o pérdida.</li>
-                <li class="def-li">Cuando OSIPTEL así lo requiera (Otros casos como uso indebido).</li>
-                <span class="def-question">¿Quiénes están habilitados?</span>
-                <li class="def-li">Solo titulares de servicios debidamente registrados.</li>
-                <li class="def-li">No pueden presentar cuestionamientos de titularidad usuarios o abonados de servicios de otros operadores.</li>
-            </ul>
-            <div class="def-highlight">
-                <strong>IMPORTANTE:</strong> El cuestionamiento de bloqueo debe realizarse ante la empresa operadora donde se cuenta con el servicio contratado. La empresa eleva el caso a OSIPTEL, quien emitirá la resolución final ordenando el desbloqueo o rechazando la solicitud.
-            </div>
-        </div>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+  :root { --primary: #1e293b; --accent: #f59e0b; --text-light: #ffffff; --bg-card: #ffffff; }
+  .s1-body { font-family: 'Montserrat', sans-serif; background-color: transparent; margin: 0; padding: 10px; }
+  .s1-container { background: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 900px; margin: auto; border: 1px solid #e2e8f0; }
+  .s1-header { background: var(--primary); padding: 25px; text-align: center; border-bottom: 5px solid var(--accent); }
+  .s1-header h1 { color: var(--text-light); margin: 0; font-weight: 900; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
+  .s1-content { padding: 30px; }
+  .s1-section-title { color: var(--accent); font-weight: 900; font-size: 1.4rem; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; }
+  .s1-section-title::after { content: ""; flex: 1; height: 2px; background: #e2e8f0; margin-left: 15px; }
+  .s1-ul { list-style: none; padding: 0; }
+  .s1-li { margin-bottom: 18px; padding-left: 35px; position: relative; line-height: 1.6; color: #334155; font-weight: 700; }
+  .s1-li::before { content: "✓"; position: absolute; left: 0; top: 0; background: var(--accent); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; }
+  .s1-highlight-box { background: #f8fafc; border-left: 5px solid var(--primary); padding: 20px; margin-top: 25px; font-size: 0.95rem; color: #475569; border-radius: 0 8px 8px 0; font-weight: 700; }
+  .s1-question { color: var(--primary); font-weight: 900; margin-top: 25px; display: block; font-size: 1.1rem; text-decoration: underline var(--accent); }
+</style>
+<div class="s1-body">
+    <div class="s1-container">
+      <div class="s1-header"><h1>DEFINICIÓN</h1></div>
+      <div class="s1-content">
+        <div class="s1-section-title">Condiciones Generales</div>
+        <ul class="s1-ul">
+          <li class="s1-li">Procedimiento iniciado por los clientes (Titulares de servicios móviles) que buscan cuestionar una acción de bloqueo de equipo o suspensión de servicio.</li>
+          <span class="s1-question">¿En qué casos se puede iniciar este procedimiento?</span>
+          <li class="s1-li">Cuando el OSIPTEL ha determinado la invalidez o adulteración de un IMEI y ordene el bloqueo del equipo y del servicio.</li>
+          <li class="s1-li">Cuando se bloquee el equipo y servicio por el reporte de sustracción o pérdida.</li>
+          <li class="s1-li">Cuando OSIPTEL así lo requiera (Otros casos como uso indebido).</li>
+          <span class="s1-question">¿Quiénes están habilitados?</span>
+          <li class="s1-li">Solo titulares de servicios debidamente registrados.</li>
+          <li class="s1-li">No pueden presentar cuestionamientos de titularidad usuarios o abonados de servicios de otros operadores.</li>
+        </ul>
+        <div class="s1-highlight-box"><strong>IMPORTANTE:</strong> El cuestionamiento de bloqueo debe realizarse ante la empresa operadora donde se cuenta con el servicio contratado. La empresa eleva el caso a OSIPTEL, quien emitirá la resolución final ordenando el desbloqueo o rechazando la solicitud.</div>
+      </div>
     </div>
-
-    <div class="flow-container">
-        <div class="flow-header">FLUJOGRAMA</div>
-        <div class="flow-table">
-            <div class="flow-box"><div class="flow-text">Abonado cuestiona bloqueo</div></div>
-            <div class="flow-box"><div class="flow-label">Se Valida:</div><div class="flow-text">-Chip o Sim card<br>-Identidad de abonado<br>-Equipo terminal</div></div>
-            <div class="flow-box"><div class="flow-label">Si no cumple:</div><div class="flow-text">No levantamiento del bloqueo del equipo y/o a la reactivación del servicio</div></div>
-            <div class="flow-box"><div class="flow-label">Se informa a</div><div class="flow-text">OSIPTEL</div></div>
-            <div class="flow-box"><div class="flow-label">Plazo</div><div class="flow-text">15 dias hábiles<br>(Cuestionamiento)</div></div>
-        </div>
-        <div class="rel-header">RELACIÓN DE ESTADO DE EQUIPO TERMINAL</div>
-        <div class="status-grid">
-            <div class="status-item"><span class="roman">I</span> EQUIPO SUSTRAÍDO O PERDIDO PREVALECE SOBRE EL RESTO DE CATEGORÍAS.</div>
-            <div class="status-item"><span class="roman">II</span> INCUMPLIMIENTO DEL INTERCAMBIO SEGURO PREVALECE SOBRE EL ESTADO DE IMEI ALTERADO</div>
-            <div class="status-item"><span class="roman">III</span> IMEI INVALIDO PREVALECE SOBRE IMEI DUPLICADO O CLONADO</div>
-        </div>
-    </div>
-
-    <div>
-        <div class="val-banner"><h1>VALIDACIÓN</h1></div>
-        <div class="val-grid">
-            <div class="val-card"><p class="val-card-text">Validar la identidad del cliente</p></div>
-            <div class="val-card"><p class="val-card-text">Verificar coincidencia del IMEI físico con el IMEI lógico (*#06#)</p></div>
-            <div class="val-card"><p class="val-card-text">Verificar que SIM Card corresponda a un servicio de su titularidad y vinculada al equipo</p></div>
-        </div>
-    </div>
-
-    <div class="tool-container">
-        <div class="tool-header"><h1>HERRAMIENTAS</h1></div>
-        <div class="tool-content">
-            <div class="tool-card">
-                <h2 class="tool-q-title">¿Qué debo revisar?</h2>
-                <p style="font-weight:600; color:#475569;">Para que se pueda proceder a un desbloqueo de equipo terminal, se debe cumplir con ciertos requerimientos:</p>
-                <ul class="tool-list">
-                    <li class="tool-li">Validación de identidad del solicitante.</li>
-                    <li class="tool-li">Es titular de un servicio Bitel.</li>
-                    <li class="tool-li">IMEI físico e IMEI lógico coinciden.</li>
-                    <li class="tool-li">Servicio se encuentra vinculado con equipo terminal bloqueado.</li>
-                    <li class="tool-li">Bloqueo de equipo no corresponde por IMEI inválido o adulterado.</li>
-                </ul>
-            </div>
-            <div class="tool-card">
-                <h2 class="tool-q-title">En caso de similitud, ¿Qué debo enviar?</h2>
-                <p style="font-weight:600; color:#475569;">Por correo electrónico nos deben de remitir la plantilla adjuntando la siguiente documentación de <span class="h-text">manera obligatoria</span>:</p>
-                <ul class="tool-list">
-                    <li class="tool-li">Solicitud de cuestionamiento de bloqueo.</li>
-                    <li class="tool-li">Documento de identidad del solicitante.</li>
-                    <li class="tool-li">Imágenes en formato <strong>.JPEG</strong> visibles de IMEI físico (2) e IMEI lógico.</li>
-                    <li class="tool-li">Estado de servicio donde se visualice la titularidad del cliente.</li>
-                </ul>
-            </div>
-            <div class="alert-box">
-                <span style="font-size:2rem;">⚠️</span>
-                <div>En caso las imágenes no sean visibles o corresponda a una caja del equipo <strong>no se considerará como válido</strong>, manteniéndose como error por parte de tienda.</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="tool-container">
-        <div class="tool-header"><h1>PROCEDIMIENTO</h1></div>
-        <div class="tool-content">
-            <p style="font-size:1.15rem; color:var(--primary-blue); font-weight:700; margin-bottom:25px; border-bottom:2px dashed #cbd5e1; padding-bottom:15px;">
-                La solicitud de Cuestionamiento de bloqueo de IMEI, debe de estar <strong>correctamente llenada y completa</strong>.
-            </p>
-            <ul class="tool-list">
-                <li class="tool-li" style="margin-bottom:20px;">Se debe contar con la solicitud de cuestionamiento de bloqueo. Documento de identidad del solicitante. Imágenes en formato .JPEG visibles de IMEI físico (2) e IMEI lógico y estado de servicio donde se visualice la titularidad del cliente.</li>
-                <li class="tool-li" style="margin-bottom:20px;">Se deberán sacar <strong>02 copias</strong> del formulario de cuestionamiento de equipo:
-                    <ul style="list-style:none; padding-left:20px; margin-top:10px;">
-                        <li style="font-weight:700; color:#475569;">📄 01 copia se entregará al cliente.</li>
-                        <li style="font-weight:700; color:#475569;">📄 01 copia se quedará en la tienda.</li>
-                    </ul>
-                </li>
-                <li class="tool-li" style="margin-bottom:20px;">Enviar a: <br><span class="email-tag">CUESTIONAMIENTOS@BITEL.COM.PE</span> <span class="email-tag">ATENCIONDERECLAMOS@BITEL.COM.PE</span></li>
-                <li class="tool-li" style="margin-bottom:20px;">Si el cliente trae la carta de OSIPTEL, el desbloqueo se ejecuta en <span class="yellow-h">no mayor a 2 días hábiles</span>.</li>
-            </ul>
-            <div class="special-box">
-                <div style="color:var(--primary-blue); font-size:1.2rem; font-weight:900; margin-bottom:10px;">CASO CARTA OSIPTEL HACIA VIETTEL:</div>
-                Si se ordena a <strong>Viettel Perú S.A.C.</strong> el desbloqueo, enviar la carta a <span class="email-tag">ATENCIONDERECLAMOS@BITEL.COM.PE</span> para validación.
-            </div>
-        </div>
-    </div>
-
-    <div class="step-container">
-        <div class="step-header"><h1>PASO 1.3</h1></div>
-        <div class="step-flex">
-            <div class="img-box" onclick="openZoom(this)">
-                <img src="https://i.postimg.cc/wxR7P9rp/Captura-de-pantalla-2026-03-09-170449.png">
-            </div>
-            <div class="step-instr">
-                <div class="h-text" style="font-size:1.3rem; margin-bottom:15px;">Seleccionar la opción</div>
-                Ruta en el menú:
-                <div class="h-path">
-                    <span class="h-text">Utilidad</span> ➔ <span class="h-text">Solicitud de cuestionamiento de bloqueo</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="step-container">
-        <div class="step-header"><h1>PASO 1.4</h1></div>
-        <div class="step-flex">
-            <div class="img-box" onclick="openZoom(this)">
-                <img src="https://i.postimg.cc/JzY8MkD7/2.png">
-            </div>
-            <div class="step-instr">
-                <div class="h-text" style="font-size:1.3rem; margin-bottom:15px;">Llenar la solicitud</div>
-                Completar campos obligatorios en:
-                <div class="h-path">
-                    <span class="h-text">Cuestionamiento de bloqueo</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-container">
-        <div class="form-header"><h1>PLANTILLA DE TIPIFICACIÓN</h1></div>
-        <div class="form-body">
-            <form id="tipificationForm">
-                <div class="form-group"><label>Titular del servicio:</label><input type="text" id="f_nombre"></div>
-                <div class="form-group"><label>Tipo de documento:</label><input type="text" id="f_tipo_doc"></div>
-                <div class="form-group"><label>Nro. de documento:</label><input type="text" id="f_nro_doc"></div>
-                <div class="form-group"><label>Motivo:</label><input type="text" id="f_motivo"></div>
-                <div class="form-group"><label>Cliente Bitel (SI/NO):</label><input type="text" id="f_cliente"></div>
-                <div class="form-group"><label>Línea relacionada:</label><input type="text" id="f_linea"></div>
-                <div class="form-group"><label>IMEI físico:</label><input type="text" id="f_imei_f"></div>
-                <div class="form-group"><label>IMEI virtual:</label><input type="text" id="f_imei_v"></div>
-                <div class="form-group"><label>Descripción:</label><textarea id="f_desc"></textarea></div>
-                <div class="form-group"><label>ID:</label><input type="text" id="f_id"></div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-clear" onclick="document.getElementById('tipificationForm').reset()">🗑️ Limpiar</button>
-                    <button type="button" class="btn btn-copy" onclick="copyTemplate()">📋 Copiar Plantilla</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="tool-container">
-        <div class="tool-header"><h1>ENVÍO DE CORREO</h1></div>
-        <div class="tool-content">
-            <div class="mail-simulator">
-                <div class="mail-head">
-                    <div class="mail-row"><div class="mail-label">Para:</div><div style="font-weight:700;"><span class="mail-tag">cuestionamientos@bitel.com.pe</span> <span class="mail-tag">atenciondereclamos@bitel.com.pe</span></div></div>
-                    <div class="mail-row"><div class="mail-label">Asunto:</div><div style="background:#fff; border:1px solid #ccc; padding:5px; width:100%; font-weight:700;">Cuestionamiento deBloqueo_ID</div></div>
-                </div>
-                <div class="mail-body">
-                    <div class="mail-greet">Estimados señores,</div>
-                    Informar que se ha generado el siguiente cuestionamiento de bloqueo de equipo.
-                    <div style="margin-top:20px; padding:20px; border:2px dashed #94a3b8; text-align:center; color:#64748b; font-weight:700;">[ PEGAR AQUÍ PLANTILLA COPIADA ]</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<div id="zoomOverlay" class="overlay" onclick="this.style.display='none'">
-    <img id="zoomImg" src="">
+<hr>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@900&display=swap');
+  .s2-main-container { max-width: 950px; margin: auto; border: 2px solid #333333; background: #ffffff; padding: 20px; font-family: 'Roboto', sans-serif; }
+  .s2-section-header { text-align: center; color: #006666; font-family: 'Roboto Condensed', sans-serif; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; text-decoration: underline; }
+  .s2-flow-table { display: flex; justify-content: center; align-items: stretch; gap: 0; margin-bottom: 40px; border: 1.5px solid black; }
+  .s2-flow-box { flex: 1; padding: 15px 10px; border-right: 1.5px solid black; display: flex; flex-direction: column; justify-content: flex-start; }
+  .s2-flow-box:last-child { border-right: none; }
+  .s2-label-blue { color: #008080; font-size: 0.9rem; margin-bottom: 5px; }
+  .s2-text-content { font-size: 0.95rem; font-weight: 900; line-height: 1.3; color: #000; }
+  .s2-relation-header { text-align: center; color: #003366; font-size: 1.1rem; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
+  .s2-status-grid { display: grid; grid-template-columns: 1fr 1.2fr 1fr; border: 1.5px solid black; }
+  .s2-status-item { padding: 20px 10px; border-right: 1.5px solid black; text-align: center; display: flex; flex-direction: column; justify-content: center; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; }
+  .s2-status-item:last-child { border-right: none; }
+  .s2-roman-num { display: block; font-size: 1.2rem; margin-bottom: 8px; }
+</style>
+<div class="s2-main-container">
+  <div class="s2-section-header">FLUJOGRAMA</div>
+  <div class="s2-flow-table">
+    <div class="s2-flow-box"><div class="s2-text-content">Abonado cuestiona bloqueo</div></div>
+    <div class="s2-flow-box"><div class="s2-label-blue">Se Valida:</div><div class="s2-text-content">-Chip o Sim card<br>-Identidad de abonado<br>-Equipo terminal</div></div>
+    <div class="s2-flow-box"><div class="s2-label-blue">Si no cumple:</div><div class="s2-text-content">No levantamiento del bloqueo del equipo y/o a la reactivación del servicio</div></div>
+    <div class="s2-flow-box"><div class="s2-label-blue">Se informa a</div><div class="s2-text-content">OSIPTEL</div></div>
+    <div class="s2-flow-box"><div class="s2-label-blue">Plazo</div><div class="s2-text-content">15 dias hábiles<br>(Cuestionamiento)</div></div>
+  </div>
+  <div class="s2-relation-header">RELACIÓN DE ESTADO DE EQUIPO TERMINAL</div>
+  <div class="s2-status-grid">
+    <div class="s2-status-item"><span class="s2-roman-num">I</span> EQUIPO SUSTRAÍDO O PERDIDO PREVALECE SOBRE EL RESTO DE CATEGORÍAS.</div>
+    <div class="s2-status-item"><span class="s2-roman-num">II</span> INCUMPLIMIENTO DEL INTERCAMBIO SEGURO PREVALECE SOBRE EL ESTADO DE IMEI ALTERADO</div>
+    <div class="s2-status-item"><span class="s2-roman-num">III</span> IMEI INVALIDO PREVALECE SOBRE IMEI DUPLICADO O CLONADO</div>
+  </div>
 </div>
 
+<hr>
+
+<style>
+  .s3-wrapper { max-width: 900px; margin: auto; font-family: 'Montserrat', sans-serif; padding: 15px; }
+  .s3-header-banner { background: #1e3a8a; padding: 15px 30px; border-radius: 50px 0 50px 0; display: inline-block; margin-bottom: 30px; box-shadow: 4px 4px 10px rgba(0,0,0,0.2); }
+  .s3-header-banner h1 { color: white; margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
+  .s3-validation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .s3-validation-card { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 15px; padding: 25px 15px; text-align: center; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); min-height: 150px; position: relative; }
+  .s3-card-text { color: #0f172a; font-size: 1rem; font-weight: 700; line-height: 1.5; }
+  .s3-validation-card::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 4px; background: #3b82f6; border-radius: 0 0 10px 10px; }
+</style>
+<div class="s3-wrapper">
+  <div class="s3-header-banner"><h1>VALIDACIÓN</h1></div>
+  <div class="s3-validation-grid">
+    <div class="s3-validation-card"><p class="s3-card-text">Validar la identidad del cliente</p></div>
+    <div class="s3-validation-card"><p class="s3-card-text">Verificar coincidencia del IMEI físico con el IMEI lógico (*#06#)</p></div>
+    <div class="s3-validation-card"><p class="s3-card-text">Verificar que SIM Card corresponda a un servicio de su titularidad y vinculada al equipo</p></div>
+  </div>
+</div>
+
+<hr>
+
+<style>
+  .s4-container { max-width: 950px; margin: auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; font-family: 'Montserrat', sans-serif; }
+  .s4-header-banner { background: #004a99; padding: 20px 40px; text-align: left; border-bottom: 5px solid #facc15; }
+  .s4-header-banner h1 { color: white; margin: 0; font-size: 1.8rem; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+  .s4-content { padding: 40px; }
+  .s4-info-card { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; }
+  .s4-question-title { color: #004a99; font-size: 1.4rem; font-weight: 900; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .s4-custom-list { list-style: none; padding: 0; margin: 0; }
+  .s4-custom-list li { position: relative; padding-left: 30px; margin-bottom: 12px; color: #1e293b; font-weight: 700; font-size: 1rem; }
+  .s4-custom-list li::before { content: "✔️"; position: absolute; left: 0; top: 0; font-size: 1.1rem; }
+  .s4-alert-box { background: #fef2f2; border: 2px solid #fecaca; border-left: 8px solid #ef4444; padding: 20px 25px; border-radius: 8px; color: #991b1b; font-size: 1.05rem; font-weight: 700; display: flex; gap: 15px; align-items: center; }
+</style>
+<div class="s4-container">
+  <div class="s4-header-banner"><h1>HERRAMIENTAS</h1></div>
+  <div class="s4-content">
+    <div class="s4-info-card">
+      <h2 class="s4-question-title">¿Qué debo revisar?</h2>
+      <p style="color:#475569; font-weight:600;">Para que se pueda proceder a un desbloqueo de equipo terminal, se debe cumplir con ciertos requerimientos:</p>
+      <ul class="s4-custom-list">
+        <li>Validación de identidad del solicitante.</li>
+        <li>Es titular de un servicio Bitel.</li>
+        <li>IMEI físico e IMEI lógico coinciden.</li>
+        <li>Servicio se encuentra vinculado con equipo terminal bloqueado.</li>
+        <li>Bloqueo de equipo no corresponde por IMEI inválido o adulterado.</li>
+      </ul>
+    </div>
+    <div class="s4-info-card">
+      <h2 class="s4-question-title">En caso de similitud, ¿Qué debo enviar?</h2>
+      <p style="color:#475569; font-weight:600;">Por correo electrónico nos deben de remitir la plantilla adjuntando la siguiente documentación de <span style="color:#004a99; font-weight:900;">manera obligatoria</span>:</p>
+      <ul class="s4-custom-list">
+        <li>Solicitud de cuestionamiento de bloqueo.</li>
+        <li>Documento de identidad del solicitante.</li>
+        <li>Imágenes en formato <strong>.JPEG</strong> visibles de IMEI físico (2) e IMEI lógico.</li>
+        <li>Estado de servicio donde se visualice la titularidad del cliente.</li>
+      </ul>
+    </div>
+    <div class="s4-alert-box"><div style="font-size: 2rem;">⚠️</div><div>En caso las imágenes no sean visibles o corresponda a una caja del equipo <strong>no se considerará como válido</strong>, manteniéndose como error por parte de tienda.</div></div>
+  </div>
+</div>
+
+<hr>
+
+<style>
+  .s5-container { max-width: 950px; margin: auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Montserrat', sans-serif; }
+  .s5-intro-text { font-size: 1.15rem; color: #004a99; font-weight: 700; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px dashed #cbd5e1; }
+  .s5-sub-list { list-style: none; padding-left: 20px; margin-top: 10px; }
+  .s5-sub-list li { position: relative; padding-left: 25px; margin-bottom: 8px; color: #475569; font-weight: 700; }
+  .s5-sub-list li::before { content: "📄"; position: absolute; left: 0; top: 0; }
+  .s5-email-tag { display: inline-block; background: #eff6ff; color: #004a99; padding: 4px 10px; border-radius: 6px; font-weight: 900; border: 1px solid #bfdbfe; margin: 2px 0; }
+  .s5-special-box { background: #f8fafc; border: 2px solid #cbd5e1; border-left: 8px solid #004a99; padding: 25px; border-radius: 8px; color: #1e293b; font-weight: 600; margin-top: 30px; }
+</style>
+<div class="s5-container">
+  <div class="s4-header-banner"><h1>HERRAMIENTAS</h1></div>
+  <div class="s4-content">
+    <div class="s5-intro-text">La solicitud de Cuestionamiento de bloqueo de IMEI, debe de estar <strong>correctamente llenada y completa</strong>.</div>
+    <div class="s4-info-card">
+      <ul class="s4-custom-list">
+        <li>Se debe contar con la solicitud de cuestionamiento de bloqueo. Documento de identidad del solicitante. Imágenes en formato .JPEG visibles de IMEI físico (2) e IMEI lógico y estado de servicio donde se visualice la titularidad del cliente.</li>
+        <li>Se deberán sacar <strong>02 copias</strong> del formulario de cuestionamiento de equipo:
+          <ul class="s5-sub-list"><li>01 copia se entregará al cliente.</li><li>01 copia se quedará en la tienda.</li></ul>
+        </li>
+        <li>Enviar la solicitud y documento de identidad escaneado (formato JPG) y las imágenes a los siguientes correos:<br>
+          <span class="s5-email-tag">CUESTIONAMIENTOS@BITEL.COM.PE</span><br><span class="s5-email-tag">ATENCIONDERECLAMOS@BITEL.COM.PE</span>
+        </li>
+        <li>La respuesta a los cuestionamientos de bloqueo de equipo es emitida y notificada por <strong>OSIPTEL</strong>.</li>
+        <li>Si el cliente se acerca a tienda con la carta de respuesta emitida por OSIPTEL... en un plazo <span style="background: rgba(250, 204, 21, 0.3); padding: 2px 5px; font-weight: 800;">no mayor a 2 días hábiles</span>.</li>
+      </ul>
+    </div>
+    <div class="s5-special-box">
+      <div style="color:#004a99; font-size:1.2rem; font-weight:900; margin-bottom:10px; text-transform:uppercase;">Caso Carta OSIPTEL hacia Viettel:</div>
+      Adicionalmente, si observamos en la carta emitida por OSIPTEL que se ordena a <strong>Viettel Perú S.A.C.</strong> el desbloqueo... se procede a enviar dicha carta al buzón <span class="s5-email-tag">ATENCIONDERECLAMOS@BITEL.COM.PE</span>.
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<style>
+  .s6-container { max-width: 1000px; margin: auto; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Montserrat', sans-serif; }
+  .s6-header-banner { background: #004a99; padding: 15px 30px; display: inline-block; border-radius: 0 0 30px 0; margin-bottom: 20px; }
+  .s6-header-banner h1 { color: white; margin: 0; font-size: 1.4rem; text-transform: uppercase; font-weight: 900; }
+  .s6-content-flex { display: flex; gap: 30px; padding: 20px; align-items: flex-start; }
+  .s6-image-box { flex: 2; cursor: zoom-in; position: relative; border: 2px solid #cbd5e1; border-radius: 8px; }
+  .s6-image-box img { width: 100%; display: block; border-radius: 6px; }
+  .s6-instructions { flex: 1; font-size: 1.1rem; line-height: 1.6; color: #1e293b; font-weight: 700; }
+  .s6-url-link { color: #004a99; word-break: break-all; text-decoration: underline; }
+  .s6-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+  .s6-overlay img { max-width: 95%; max-height: 95%; }
+</style>
+<div class="s6-container">
+  <div class="s6-header-banner"><h1>VALIDACIÓN</h1></div>
+  <div class="s6-content-flex">
+    <div class="s6-image-box" onclick="document.getElementById('zoomS6').style.display='flex'">
+      <img src="https://i.postimg.cc/5ySp18tj/Captura-de-pantalla-2026-03-09-165657.png">
+      <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.6); color:white; padding:5px; font-size:10px; border-radius:4px;">Hacer clic para ampliar</div>
+    </div>
+    <div class="s6-instructions">Ingresar a <br><span class="s6-url-link">https://bccsportal.bitel.com.pe/</span> <br>a la opción marcada en rojo <br><strong style="background:#facc15; padding:2px 5px; border-radius:4px;">“atención al cliente”</strong>.</div>
+  </div>
+</div>
+<div id="zoomS6" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/5ySp18tj/Captura-de-pantalla-2026-03-09-165657.png"></div>
+
+<hr>
+
+<style>
+  .s7-highlight-path { background: #f8fafc; border-left: 4px solid #facc15; padding: 15px; border-radius: 0 8px 8px 0; margin-top: 10px; }
+  .s7-highlight-text { color: #004a99; font-weight: 900; }
+</style>
+<div class="s6-container">
+  <div class="s6-header-banner"><h1>PASO 1.3</h1></div>
+  <div class="s6-content-flex">
+    <div class="s6-image-box" onclick="document.getElementById('zoomS7').style.display='flex'">
+      <img src="https://i.postimg.cc/wxR7P9rp/Captura-de-pantalla-2026-03-09-170449.png">
+    </div>
+    <div class="s6-instructions">
+      <div style="color:#004a99; font-size:1.3rem; font-weight:900; margin-bottom:15px;">Seleccionar la opción</div>
+      El agente deberá seleccionar la siguiente ruta en el menú:
+      <div class="s7-highlight-path">
+        <span class="s7-highlight-text">Utilidad</span> ➔ <span class="s7-highlight-text">Solicitud de cuestionamiento de bloqueo</span>
+        <span style="font-size:0.85rem; color:#64748b; font-weight:700; display:block; margin-top:5px;">(Utility ➔ Lock questioning request)</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="zoomS7" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/wxR7P9rp/Captura-de-pantalla-2026-03-09-170449.png"></div>
+
+<hr>
+
+<div class="s6-container">
+  <div class="s6-header-banner"><h1>PASO 1.4</h1></div>
+  <div class="s6-content-flex">
+    <div class="s6-image-box" onclick="document.getElementById('zoomS8').style.display='flex'">
+      <img src="https://i.postimg.cc/JzY8MkD7/2.png">
+    </div>
+    <div class="s6-instructions">
+      <div style="color:#004a99; font-size:1.3rem; font-weight:900; margin-bottom:15px;">Llenar la solicitud</div>
+      El agente deberá completar todos los campos obligatorios del formulario de:
+      <div class="s7-highlight-path"><span class="s7-highlight-text">Cuestionamiento de bloqueo</span></div>
+      <p style="font-size: 0.95rem; margin-top: 15px; color: #475569;">Asegúrese de ingresar correctamente la información del cliente (Information Client) y los detalles de la operación (Information Operation).</p>
+    </div>
+  </div>
+</div>
+<div id="zoomS8" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/JzY8MkD7/2.png"></div>
+
+<hr>
+
+<div class="s6-container">
+  <div class="s6-header-banner"><h1>PASO 1.4 - CONTINUACIÓN</h1></div>
+  <div class="s6-content-flex">
+    <div class="s6-image-box" onclick="document.getElementById('zoomS9').style.display='flex'">
+      <img src="https://i.postimg.cc/nhJ2rRmq/Captura-de-pantalla-2026-03-09-171943.png">
+    </div>
+    <div class="s6-instructions">
+      <div style="color:#004a99; font-size:1.3rem; font-weight:900; margin-bottom:15px;">Para persona natural:</div>
+      En la sección de <em>Information Client</em>:
+      <div class="s7-highlight-path">Ingresar <span class="s7-highlight-text">los datos necesarios manualmente</span> mostrados en la pantalla.</div>
+      <p style="font-size: 0.95rem; margin-top: 15px; color: #475569;">Asegúrese de registrar correctamente el Nombre, Tipo de Documento, Número de DNI/ID y la Dirección completa.</p>
+    </div>
+  </div>
+</div>
+<div id="zoomS9" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/nhJ2rRmq/Captura-de-pantalla-2026-03-09-171943.png"></div>
+
+<hr>
+
+<style>
+  .s10-image-box { width: 100%; max-width: 850px; cursor: zoom-in; position: relative; border: 3px solid #cbd5e1; border-radius: 12px; margin-bottom: 40px; }
+  .s10-instructions-section { width: 100%; max-width: 850px; background-color: #f8fafc; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; }
+  .s10-precisions-list { list-style: none; padding: 0; display: grid; gap: 15px; }
+  .s10-precisions-list li { background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .s10-field-name { color: #004a99; font-weight: 900; display: block; font-size: 1.1rem; margin-bottom: 6px; text-transform: uppercase; }
+</style>
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>PASO 1.4 - OPERACIÓN</h1></div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS10').style.display='flex'">
+    <img src="https://i.postimg.cc/D0RCx7mY/Captura-de-pantalla-2026-03-09-172934.png" style="width:100%; border-radius:9px;">
+  </div>
+  <div class="s10-instructions-section">
+    <div class="s7-highlight-path" style="margin-bottom:30px;">Ingresar <span class="s7-highlight-text">los datos necesarios manualmente</span>.</div>
+    <div style="color:#004a99; font-size:1.4rem; font-weight:900; margin-bottom:20px;">PRECISIONES:</div>
+    <ul class="s10-precisions-list">
+      <li><span class="s10-field-name">Campo Cliente Bitel:</span> Detalle: <span style="font-weight:700;">Si es cliente Bitel (SI) / No es cliente Bitel (NO)</span></li>
+      <li><span class="s10-field-name">Campo En qué empresa operadora lo adquirió:</span> Detalle: <span style="font-weight:700;">Donde adquirió el equipo.</span></li>
+      <li><span class="s10-field-name">Campo Equipo adquirido de empresa operadora:</span> Detalle: <span style="font-weight:700;">Comprado en Bitel (SI) / No comprado en Bitel (NO)</span></li>
+    </ul>
+  </div>
+</div>
+<div id="zoomS10" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/D0RCx7mY/Captura-de-pantalla-2026-03-09-172934.png"></div>
+
+<hr>
+
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>PASO 1.4 - ANTECEDENTES</h1></div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS11').style.display='flex'">
+    <img src="https://i.postimg.cc/RCPqNNn8/Captura-de-pantalla-2026-03-09-173906.png" style="width:100%; border-radius:9px;">
+  </div>
+  <div class="s10-instructions-section">
+    <div class="s7-highlight-path" style="margin-bottom:30px;">Ingresar <span class="s7-highlight-text">los datos necesarios manualmente</span>.</div>
+    <div style="color:#004a99; font-size:1.4rem; font-weight:900; margin-bottom:20px;">PRECISIONES:</div>
+    <ul class="s10-precisions-list">
+      <li><span class="s10-field-name">Campo Empresa Operadora:</span> Seleccionar en qué empresa fue habilitado.</li>
+      <li><span class="s10-field-name">Campo Razón para solicitar nueva autorización:</span> Razón de la nueva habilitación.</li>
+    </ul>
+    <div style="margin-top:30px; background:#fffbeb; border:2px solid #fde047; border-left:8px solid #ca8a04; padding:20px; border-radius:8px; text-align:center; color:#854d0e; font-weight:900;">POR EL MOMENTO SOLO SE DEBE LLENAR ESTA PESTAÑA SOLO PARA LOS CASOS DE PORTABILIDAD.</div>
+  </div>
+</div>
+<div id="zoomS11" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/RCPqNNn8/Captura-de-pantalla-2026-03-09-173906.png"></div>
+
+<hr>
+
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>PASO 1.4 - RESULTADOS</h1></div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS12').style.display='flex'">
+    <img src="https://i.postimg.cc/RCc5D8vt/Captura-de-pantalla-2026-03-09-174557.png" style="width:100%; border-radius:9px;">
+  </div>
+  <div class="s10-instructions-section">
+    <div class="s7-highlight-path" style="margin-bottom:30px;">Ingresar <span class="s7-highlight-text">los datos necesarios manualmente</span>.</div>
+    <ul class="s10-precisions-list">
+      <li><span class="s10-field-name">Campo Empresa declara PROCEDENTE:</span> SI / NO</li>
+      <li><span class="s10-field-name">Campo Elevado para revisión de OSIPTEL:</span> SI / NO</li>
+    </ul>
+    <div style="margin-top:30px; background:#eff6ff; border:2px solid #bfdbfe; border-left:8px solid #004a99; padding:20px; border-radius:8px; color:#004a99; font-weight:700;">Hacer clic en el botón <span style="background:#004a99; color:white; padding:4px 10px; border-radius:4px; font-weight:900;">PRINT</span> para generar el formato.</div>
+  </div>
+</div>
+<div id="zoomS12" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/RCc5D8vt/Captura-de-pantalla-2026-03-09-174557.png"></div>
+
+<hr>
+
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>PASO 1.5 - PLANTILLA IMPRESA</h1></div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS13').style.display='flex'" style="max-width:750px; background:#e2e8f0; padding:30px; box-sizing:border-box;">
+    <img src="https://i.postimg.cc/Bbgq9wfS/Screenshot-2026-03-09-at-17-56-24-Cam-Scanner-05-03-26-11-28-SOLICITUD-pdf.png" style="width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+  </div>
+  <div style="background:#fffbeb; border:2px solid #fde047; border-left:8px solid #facc15; padding:25px; border-radius:8px; font-weight:700;">
+    <div style="color:#b45309; font-size:1.3rem; font-weight:900; margin-bottom:15px;">📝 Acción Requerida</div>
+    Revisar datos, solicitar <span class="s7-highlight-text">firma física del cliente</span> y <span class="s7-highlight-text">sellar la documentación</span>.
+  </div>
+</div>
+<div id="zoomS13" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/Bbgq9wfS/Screenshot-2026-03-09-at-17-56-24-Cam-Scanner-05-03-26-11-28-SOLICITUD-pdf.png"></div>
+
+<hr>
+
+<style>
+  .s14-form-container { max-width: 850px; margin: auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; font-family: 'Montserrat', sans-serif; overflow: hidden; }
+  .s14-form-group { display: flex; flex-direction: row; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px; }
+  .s14-form-group label { flex: 0 0 45%; font-weight: 700; color: #004a99; font-size: 0.9rem; padding-right: 10px; }
+  .s14-form-group input, .s14-form-group textarea, .s14-form-group select { flex: 1; padding: 6px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; font-weight: 600; }
+  .s14-btn-copy { background-color: #004a99; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase; flex: 1; }
+  #toast { visibility: hidden; min-width: 250px; background-color: #10b981; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); font-weight: 700; opacity: 0; transition: opacity 0.3s; z-index: 10000; }
+  #toast.show { visibility: visible; opacity: 1; }
+</style>
+<div class="s14-form-container">
+  <div class="s4-header-banner" style="text-align:center;"><h1>PLANTILLA</h1></div>
+  <div style="padding: 20px 30px; background: #f8fafc;">
+    <form id="tipificationForm">
+      <div class="s14-form-group"><label>Nombres y Apellidos del titular del servicio:</label><input type="text" id="f_nombre" placeholder="Ej. Juan Pérez Gómez"></div>
+      <div class="s14-form-group"><label>• Tipo de documento de Identidad:</label><input type="text" id="f_tipo_doc" placeholder="Ej. DNI, CE"></div>
+      <div class="s14-form-group"><label>• Nro. de documento de Identidad:</label><input type="text" id="f_nro_doc" placeholder="Ej. 76062404"></div>
+      <div class="s14-form-group"><label>• Motivo de cuestionamiento:</label><input type="text" id="f_motivo" placeholder="Ej. Bloqueo por pérdida"></div>
+      <div class="s14-form-group"><label>• Cliente Bitel:</label><input type="text" id="f_cliente" placeholder="Ej. SI / NO"></div>
+      <div class="s14-form-group"><label>• Línea relacionada al IMEI:</label><input type="text" id="f_linea" placeholder="Ej. 987654321"></div>
+      <div class="s14-form-group"><label>• Nro. de IMEI físico:</label><input type="text" id="f_imei_f" placeholder="Ingresar los 15 dígitos"></div>
+      <div class="s14-form-group"><label>• Nro. de IMEI virtual:</label><input type="text" id="f_imei_v" placeholder="Ingresar los 15 dígitos"></div>
+      <div class="s14-form-group"><label>• Descripción:</label><textarea id="f_desc" placeholder="Detallar brevemente..."></textarea></div>
+      <div class="s14-form-group"><label>• Documento adjuntos por el solicitante:</label><input type="text" id="f_doc_sol" placeholder="Ej. Copia de DNI"></div>
+      <div class="s14-form-group"><label>• Documentos adjuntos por BITEL:</label><input type="text" id="f_doc_bitel" placeholder="Ej. Captura de SMS"></div>
+      <div class="s14-form-group"><label>• Declaración jurada:</label><select id="f_dj"><option value="">Seleccione...</option><option value="SI">SI</option><option value="NO">NO</option></select></div>
+      <div class="s14-form-group" style="border-bottom: none;"><label>• ID:</label><input type="text" id="f_id" placeholder="Ej. 199558254"></div>
+      <div style="display:flex; gap:15px; margin-top:20px;">
+        <button type="button" style="background:#e2e8f0; color:#475569; padding:12px; border:none; border-radius:6px; font-weight:900; cursor:pointer; flex:1;" onclick="document.getElementById('tipificationForm').reset()">🗑️ Limpiar</button>
+        <button type="button" class="s14-btn-copy" onclick="copyTemplate()">📋 Copiar Plantilla</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="toast">✅ ¡Plantilla copiada correctamente!</div>
 <script>
-    function openZoom(el) {
-        const img = el.querySelector('img').src;
-        document.getElementById("zoomImg").src = img;
-        document.getElementById("zoomOverlay").style.display = "flex";
-    }
-
-    function copyTemplate() {
-        const val = (id) => document.getElementById(id).value;
-        const text = `Nombres y Apellidos: ${val('f_nombre')}\n• Tipo Doc: ${val('f_tipo_doc')}\n• Nro Doc: ${val('f_nro_doc')}\n• Motivo: ${val('f_motivo')}\n• Cliente Bitel: ${val('f_cliente')}\n• Línea: ${val('f_linea')}\n• IMEI Físico: ${val('f_imei_f')}\n• IMEI Virtual: ${val('f_imei_v')}\n• Descripción: ${val('f_desc')}\n• ID: ${val('f_id')}`;
-        
-        const el = document.createElement('textarea');
-        el.value = text;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        alert("¡Plantilla copiada!");
-    }
+  function copyTemplate() {
+    const val = (id) => document.getElementById(id).value.trim();
+    const templateText = `Nombres y Apellidos del titular del servicio: ${val('f_nombre')}\n• Tipo de documento de Identidad: ${val('f_tipo_doc')}\n• Nro. de documento de Identidad: ${val('f_nro_doc')}\n• Motivo de cuestionamiento: ${val('f_motivo')}\n• Cliente Bitel: ${val('f_cliente')}\n• Línea relacionada al IMEI: ${val('f_linea')}\n• Nro. de IMEI físico: ${val('f_imei_f')}\n• Nro. de IMEI virtual: ${val('f_imei_v')}\n• Descripción: ${val('f_desc')}\n• Documento adjuntos por el solicitante: ${val('f_doc_sol')}\n• Documentos adjuntos por BITEL: ${val('f_doc_bitel')}\n• Declaración jurada: ${val('f_dj')}\n• ID: ${val('f_id')}`;
+    const textArea = document.createElement("textarea");
+    textArea.value = templateText;
+    textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus(); textArea.select();
+    try { document.execCommand('copy'); showToast(); } catch (err) { alert("Error al copiar"); }
+    document.body.removeChild(textArea);
+  }
+  function showToast() { var t = document.getElementById("toast"); t.className = "show"; setTimeout(function(){ t.className = t.className.replace("show", ""); }, 3000); }
 </script>
+
+<hr>
+
+<style>
+  .s15-path-box { background: #eff6ff; padding: 15px; border-radius: 8px; margin-top: 10px; font-size: 1rem; color: #1e3a8a; font-weight: 700; border: 1px dashed #bfdbfe; }
+  .s15-precisions-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .s15-precisions-list li { background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; border-left: 4px solid #facc15; display: flex; align-items: center; font-weight: 700; color: #475569; }
+</style>
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>PASO 1.6 - TIPICACIÓN</h1></div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS15').style.display='flex'">
+    <img src="https://i.postimg.cc/fW6FDvRs/Captura-de-pantalla-2026-03-09-180932.png" style="width:100%; border-radius:9px;">
+  </div>
+  <div class="s10-instructions-section">
+    <div style="background:#ffffff; border-left:5px solid #004a99; padding:20px; border-radius:0 8px 8px 0; margin-bottom:25px; font-weight:700;">
+      <strong>Opciones a Seleccionar:</strong>
+      <div class="s15-path-box">Operación ➔ Operación ➔ Transacciones de la linea ➔ Cuestionamiento de Bloqueo ➔ Bloqueo de equipo</div>
+    </div>
+    <div style="color:#004a99; font-size:1.3rem; font-weight:900; margin-bottom:20px;">ADJUNTAR VALIDACIONES Y EVIDENCIA:</div>
+    <ul class="s15-precisions-list">
+      <li>✔️ Captura de OSIPTEL</li><li>✔️ Documento identidad</li><li>✔️ Imágenes IMEI (3)</li><li>✔️ Formulario firmado</li><li>✔️ Captura huella</li>
+    </ul>
+    <div style="margin-top:25px; background:#fffbeb; border:2px solid #fde047; border-left:8px solid #ca8a04; padding:20px; border-radius:8px; color:#854d0e; font-weight:900; text-align:center;">⚠️ LAS IMÁGENES DEBERÁN ADJUNTARSE EN FORMATO JPG.</div>
+  </div>
+</div>
+<div id="zoomS15" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/fW6FDvRs/Captura-de-pantalla-2026-03-09-180932.png"></div>
+
+<hr>
+
+<style>
+  .s16-email-simulator { width: 100%; max-width: 850px; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 40px; overflow: hidden; }
+  .s16-email-tag { display: inline-block; background: #dbeafe; color: #1e3a8a; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; margin: 3px 5px 3px 0; border: 1px solid #bfdbfe; }
+</style>
+<div class="s6-container" style="padding:40px; display:flex; flex-direction:column; align-items:center;">
+  <div class="s6-header-banner" style="align-self: flex-start;"><h1>ENVÍO DE CORREO</h1></div>
+  <div class="s16-email-simulator">
+    <div style="background:#f1f5f9; padding:20px; border-bottom:2px solid #e2e8f0;">
+      <div style="display:flex;"><div style="width:80px; font-weight:900; color:#004a99;">Para:</div><div><span class="s16-email-tag">cuestionamientos@bitel.com.pe</span><span class="s16-email-tag">atenciondereclamos@bitel.com.pe</span><span class="s16-email-tag">backreclamos@efectivabpo.com</span></div></div>
+      <div style="display:flex; margin-top:15px;"><div style="width:80px; font-weight:900; color:#004a99;">Asunto:</div><div style="background:#fff; border:1px solid #cbd5e1; padding:10px; border-radius:6px; font-weight:700; flex:1;">Cuestionamiento deBloqueo_13151515 (ID)</div></div>
+    </div>
+    <div style="padding:30px; background:#fff; font-weight:500;">
+      <div style="font-weight:700; color:#004a99; margin-bottom:15px;">Estimados señores,</div>
+      Informar que se ha generado el siguiente cuestionamiento de bloqueo de equipo en la línea <strong>910xxxxxx</strong>
+      <div style="margin-top:20px; padding:20px; background:#f8fafc; border:2px dashed #94a3b8; border-radius:8px; text-align:center; color:#64748b; font-weight:700;">[ PEGAR AQUÍ LA PLANTILLA LLENADA EN EL PASO ANTERIOR ]</div>
+    </div>
+  </div>
+  <div style="color:#004a99; font-size:1.3rem; font-weight:900; margin-bottom:15px; text-transform:uppercase;">Ejemplo del correo a enviar</div>
+  <div class="s10-image-box" onclick="document.getElementById('zoomS16').style.display='flex'">
+    <img src="https://i.postimg.cc/QN97cQk1/Captura-de-pantalla-2026-03-09-184548.png" style="width:100%; border-radius:9px;">
+  </div>
+</div>
+<div id="zoomS16" class="s6-overlay" onclick="this.style.display='none'"><img src="https://i.postimg.cc/QN97cQk1/Captura-de-pantalla-2026-03-09-184548.png"></div>
 
 </body>
 </html>
