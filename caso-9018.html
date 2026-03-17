@@ -3,333 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Plantillas 9018 - Nelyess</title>
+    <title>CASO 9018 - Matriz Completa</title>
     <style>
         :root {
-            --primary: #00bcd4;
-            --bg: #000000;
-            --card: #111111;
-            --btn-bg: #1a1a1a;
-            --text: #ffffff;
+            --header-bg: #24292e;
+            --header-text: #ffffff;
+            --bg-body: #f6f8fa;
+            --bg-panel: #ffffff;
+            --border: #e1e4e8;
+            --text-main: #24292e;
+            --text-muted: #586069;
+            --primary: #0366d6;
+            --row-hover: #f1f8ff;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --header-height: 60px;
         }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { font-family: var(--font-family); background: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: var(--card);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #333;
-            min-height: 80vh;
-        }
+        /* ENCABEZADO FIJO */
+        header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--header-bg); color: var(--header-text); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 1000; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .back-link { color: var(--header-text); text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 0.8; text-decoration: underline; }
+        .header-title { font-weight: 700; font-size: 16px; letter-spacing: 1px; }
 
-        h1 { color: var(--primary); text-align: center; margin-bottom: 30px; text-transform: uppercase; }
+        /* CONTENIDO PRINCIPAL */
+        .main-content { margin-top: var(--header-height); display: flex; height: calc(100vh - var(--header-height)); overflow: hidden; }
 
-        .breadcrumb {
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: var(--primary);
-        }
+        /* TABLA TIPO EXCEL */
+        .table-section { flex: 6; overflow-y: auto; padding: 24px; background: var(--bg-body); }
+        .table-container { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 1px 2px rgba(27,31,35,0.05); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f6f8fa; position: sticky; top: 0; z-index: 10; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; }
+        
+        .merged-cell { background: #ffffff; font-weight: 600; color: var(--text-main); }
+        .type-row { cursor: pointer; transition: background 0.2s; }
+        .type-row:hover td.type-cell { background: var(--row-hover); color: var(--primary); }
+        .type-row.active td.type-cell { background: var(--primary); color: white; font-weight: 600; }
 
-        /* Estilo de los Botones de Selección */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+        /* FORMULARIO LATERAL */
+        .form-section { flex: 4; background: var(--bg-panel); border-left: 1px solid var(--border); padding: 32px 24px; overflow-y: auto; display: none; }
+        .form-section.active { display: block; }
+        .form-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .form-header h2 { margin: 0 0 8px 0; font-size: 18px; color: var(--primary); line-height: 1.3; }
+        .form-header p { margin: 0; font-size: 12px; color: var(--text-muted); }
 
-        .btn-option {
-            background: var(--btn-bg);
-            border: 1px solid #444;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.3s;
-            font-weight: 500;
-        }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .field-group input, .field-group textarea { width: 100%; padding: 10px 12px; font-size: 14px; font-family: inherit; background: #fafbfc; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+        .field-group input:focus, .field-group textarea:focus { outline: none; border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3); }
 
-        .btn-option:hover {
-            border-color: var(--primary);
-            background: #222;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.2);
-        }
-
-        .btn-back {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        /* Formulario */
-        .template-card {
-            background: #0a0a0a;
-            padding: 25px;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .instruction {
-            color: #aaa;
-            font-size: 0.85em;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .field-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .btn-copy {
-            background: var(--primary);
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            text-transform: uppercase;
-        }
-
-        .hidden { display: none; }
+        .btn-copy { background: #2ea44f; color: white; border: 1px solid rgba(27,31,35,0.15); padding: 12px 24px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-copy:hover { background: #2c974b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Centro de Gestión 9018</h1>
-    
-    <div id="navigation" class="breadcrumb">Inicio</div>
-    <button id="backBtn" class="btn-back hidden" onclick="goBack()">← Volver</button>
+<header>
+    <a href="posventa.html" class="back-link">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+        Inicio
+    </a>
+    <div class="header-title">CASO 9018</div>
+</header>
 
-    <div id="level1" class="menu-grid">
-        <button class="btn-option" onclick="showLevel2('activacion')">ACTIVACIÓN / DESACTIVACIÓN Y SERVICIOS VAS</button>
-        <button class="btn-option" onclick="showLevel2('ajustes')">AJUSTES Y RECLAMOS DE FACTURACIÓN</button>
-        <button class="btn-option" onclick="showLevel2('bloqueos')">BLOQUEOS Y DESBLOQUEOS (IMEI/LÍNEA)</button>
-        <button class="btn-option" onclick="showLevel2('transacciones')">TRANSACCIONES DE LÍNEA Y PORTABILIDAD</button>
-        <button class="btn-option" onclick="showLevel2('fallas')">FALLAS TÉCNICAS (INTERNET/VOZ/SMS)</button>
+<div class="main-content">
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="30%">Claim Group Master</th>
+                        <th width="35%">Claim Group</th>
+                        <th width="35%">Complaint Type</th>
+                    </tr>
+                </thead>
+                <tbody id="excelBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="level2" class="menu-grid hidden"></div>
-
-    <div id="level3" class="menu-grid hidden"></div>
-
-    <div id="templateContainer" class="hidden">
-        <div class="template-card">
-            <h2 id="templateTitle" style="color: var(--primary);"></h2>
-            <p class="instruction">Instrucciones: Complete los campos a continuación. Los textos de guía desaparecerán automáticamente al escribir. Al finalizar, use el botón "Copiar" para procesar su ticket.</p>
-            <form id="activeForm">
-                <div id="dynamicFields"></div>
-                <button type="button" class="btn-copy" onclick="copyTemplate()">Copiar Información Formateada</button>
-            </form>
+    <div class="form-section" id="formPanel">
+        <div class="form-header">
+            <h2 id="formTitle">Título de Plantilla</h2>
+            <p id="formPath">Ruta</p>
         </div>
+        <div id="dynamicInputs"></div>
+        <button class="btn-copy" onclick="copyToClipboard()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+            Copiar Plantilla
+        </button>
     </div>
 </div>
 
 <script>
-    const data = {
-        activacion: {
-            title: "Activación/Desactivación y VAS",
-            options: {
-                paquetes: {
-                    title: "Paquetes de Datos/Voz",
-                    options: {
-                        "activar-paq": { title: "Activación de Paquetes", fields: ["Línea", "Nombre del Paquete", "Monto", "Fecha y Hora", "Error de Sistema", "Descartes"] },
-                        "desactivar-paq": { title: "Desactivación de Paquetes", fields: ["Línea", "Paquete a eliminar", "Motivo", "Error al intentar", "Descartes"] }
-                    }
-                },
-                vas: {
-                    title: "Servicios VAS",
-                    options: {
-                        "act-vas": { title: "Incidencia con Activación VAS", fields: ["Línea", "Nombre VAS (B-comparte/Casilla/etc)", "Mensaje de error", "Agente", "Descartes"] },
-                        "des-vas": { title: "Incidencia con Desactivación VAS", fields: ["Línea", "Servicio VAS", "Error al desactivar", "Descartes"] }
-                    }
-                }
-            }
-        },
-        ajustes: {
-            title: "Ajustes y Facturación",
-            options: {
-                factura: {
-                    title: "Reclamo de Factura",
-                    options: {
-                        "ajuste-monto": { title: "Ajuste de Factura (Monto Incorrecto)", fields: ["Línea", "Periodo", "Monto a ajustar", "Jefe que autoriza", "Motivo (Sistema/Operativo)", "Descripción detallada"] },
-                        "penalidad": { title: "Penalidad Incorrecta", fields: ["Línea", "Monto penalidad", "Operador de origen", "Fecha de portabilidad", "Descripción", "Descartes"] }
-                    }
-                }
-            }
-        },
-        bloqueos: {
-            title: "Bloqueos y Desbloqueos",
-            options: {
-                imei: {
-                    title: "Gestión de IMEI",
-                    options: {
-                        "des-imei": { title: "Desbloqueo de Equipo", fields: ["IMEI", "Marca/Modelo", "Línea asociada", "DNI Solicitante", "Motivo (Error operativo/Carta)", "Jefe autorizador"] },
-                        "bloq-imei": { title: "Bloqueo por Robo/Pérdida", fields: ["IMEI", "Línea", "Datos del cliente", "Marca del equipo", "Número de referencia"] }
-                    }
-                },
-                linea: {
-                    title: "Gestión de Línea",
-                    options: {
-                        "des-deuda": { title: "Desbloqueo por Deuda Pago", fields: ["Línea", "Fecha de pago", "Monto", "Operación", "Validación en PS/CC", "Descripción"] }
-                    }
-                }
-            }
-        },
-        transacciones: {
-            title: "Transacciones de Línea",
-            options: {
-                sim: {
-                    title: "Cambios de SIM / Titular",
-                    options: {
-                        "repo-sim": { title: "Error Reposición SIM", fields: ["Línea", "Serial Nuevo SIM", "Mensaje de Error", "Agente", "Validación Biométrica (SI/NO)", "Descartes"] },
-                        "titularidad": { title: "Bypass Cambio Titular", fields: ["Línea", "DNI Titular Actual", "DNI Nuevo Titular", "Motivo", "Fallecimiento (SI/NO)"] }
-                    }
-                }
-            }
-        },
-        fallas: {
-            title: "Fallas Técnicas",
-            options: {
-                cobertura: {
-                    title: "Problemas de Cobertura",
-                    options: {
-                        "internet": { title: "Falla de Navegación", fields: ["Línea", "Plan", "Configuración APN", "Coordenadas Lat/Long", "Barras de señal", "Modelo de equipo", "Descartes realizados"] },
-                        "llamadas": { title: "Falla de Llamadas (HLR/OCS)", fields: ["Línea", "Error (Entrantes/Salientes)", "Estado HLR", "Routing Category", "Lugar de falla", "Descartes"] }
-                    }
-                }
-            }
-        }
-    };
+// BASE DE DATOS EXACTA DEL EXCEL (Menú Completo)
+const db = {"Activacion y desactivacion de paquetes e incidencias de servicios VAS":{"Activacion Paquetes":["Paquetes DN","Paquetes Mixtos","Paquetes de Internet Controlado","Paquetes de Internet Ilimitado","Paquetes de SMS","Paquetes de Voz"],"Activación Paquete Bfono":["Activación BFIX 10","Activación BFIX 5"],"Activacion Paquetes Facturados":["Paquetes DN","Paquetes Mixtos","Paquetes de Internet Controlado","Paquetes de Internet Ilimitado","Paquetes de SMS","Paquetes de Voz"],"Desactivación Paquete Bfono":["Desactivación BFIX 10","Desactivación BFIX 5"],"Desactivacion de Paquetes":["Paquetes DN","Paquetes Mixtos","Paquetes de Internet Controlado","Paquetes de Internet Ilimitado","Paquetes de SMS","Paquetes de Voz"],"Desactivacion de Paquetes Facturados":["Paquetes DN","Paquetes Mixtos","Paquetes de Internet Controlado","Paquetes de Internet Ilimitado","Paquetes de SMS","Paquetes de Voz"],"Incidencia con Desactivacion VAS":["Casilla de Voz","Otros"],"Incidencia con Activacion VAS":["B-comparte","Casilla de Voz","Mi Bitel","Otros"],"Paquete recurrente Ichip 15":["Desactivación de FF10","Desactivación de FF3","Desactivación de FF5"],"Problema con el servicio VAS":["B-comparte","Casilla de Voz","Mi Bitel","Otros"]},"Ajuste de factura y recargas":{"Ajuste de factura":["Error de sistema"]},"Equipo":{"SIM Lock":["Bitel"]},"Estado de linea":{"Linea multifuncion":["Corrección de Blocked Status","Corrección de OCS y HLR"],"Línea Postpago":["Barring activo","Corrección de Blocked Status","Corrección de HLR","Corrección de OCS","Corrección de OCS y HLR"],"Línea Prepago":["Corrección de Blocked Status","Corrección de HLR","Corrección de OCS","Corrección de OCS y HLR"]},"Facturación":{"Cancelacion de Pago - PS":["Cliente desiste de realizar el pago","Error de Operativo","Error de sistema"],"Desbloqueo de linea por deuda":["No tiene deuda pendiente","Por reclamo pendiente"],"Pagos no aplicados":["No aplica pago adelantado"],"Recibo":["Incidente con duplicado de recibo","No entrega de recibo"],"Incidencia con el acceso a los aplicativos del BCCS":["Problemas con Customer Care","Problemas con Customer Management","Problemas con Mobile Number Portability","Problemas con Payment","Problemas con Sale Management"],"incidencia con el proceso de activacion postpago":["Corrección de tipo de documento","Deuda Incorrecta","HLR y OCS activo","Mensaje de error por deuda no reflejada","No muestra razon de conexion","Otros","Problema de impresion de contrato","Problemas con Contrato Digital"],"incidencia con el proceso de activacion prepago":["Inactive en OCS - Problemas 1ra llamada","Two way Block en OCS - Problemas 1ra llamada"],"Incidencia con los procedimientos":["Incidencia al realizar actualizacion de datos CAB - CAB dealer","Incidencia al realizar bloqueo y desbloqueo","Incidencia al realizar cambio de ciclo de faturacion","Incidencia al realizar cambio de titularidad","Incidencia al realizar cancelacion","Incidencia al realizar migracion","Incidencia al realizar renovacion","Incidencia al realizar suspension temporal","Incidencia al realizar union y separacion de contrato","Incidencia al validar detalle de consumo y llamadas entrantes"],"Incidencia con los procesos en el BCCS":["CM - Monto incorrecto de penalidad","Otros","PS - Eliminar dinero sobrante","PS - Eliminar dinero sobrante por cambio de titularidad","PS - Hot Charge incorrecto","PS - Penalidad incorrecta","PS - Problemas al generar pago"],"Incidencia con los procesos en el MBCCS":["Lentitud con el aplicativo","Otros","Problemas con el acceso al aplicativo","Proceso de recarga"],"Lentitud con los aplicativos del BCCS":["Problemas con Customer Management"],"Registro y actualizacion de datos - Preventa":["Actualización de datos de RUC","Actualización de datos del cliente","Ingreso de datos del nuevo cliente"]},"Linea multifuncion":{"Compra de saldo anypay":["No ha recibido saldo Any Pay"],"Descuento incorrectos anypay":["Alta Nueva","Migracion","Portabilidad"],"Incidencia con anypay":["No puede consultar saldo","Transferencia de anypay a otra cuenta - STA"]},"Planes":{"Planes no vigentes postpago":["No recibio beneficios del Plan postpago Megachip Control"],"Planes vigentes postpago":["No recibio beneficios del plan Giga plus","No recibio beneficios del Plan interno","No recibio beneficios del Plan postpago Ichip"]},"Portabilidad":{"Corregir MNP":["No puede realizar llamadas a Bitel","No puede realizar llamadas a otros operadores","No puede realizar ni recibir llamadas de Bitel","No puede realizar ni recibir llamadas de otros operadores","No puede recibir llamadas de Bitel","No puede recibir llamadas de otros operadores"],"Portabilidad a Bitel":["Corregir razon de conexión","incidencia 0-new","No registra precio - Marca y modelo del IMEI ingresado","No se puede ingresar SIM Mobile","No se puede ingresar SIM Mobile e IMEI","Otros","Portabilidad no concretada","Problemas con validacion biometrica","Incidencia con cobro de hot charge"],"Portabilidad a otro operador":["Incidencia con cobro de penalidad","Linea portada a otro operador pero sigue activa en bitel","Otros","Bono de portabilidad"]},"Promociones y bonos promocionales":{"B-Puntos":["No recibe puntos"],"Incidencia con al asignacion de bonos promocionales":["Bono de promocion de recarga","Bono por activacion de linea prepago","Bono por entrega de recibo","Bono por fidelidad","Bono recurrente Bdatos","Bono recurrente Bsmart","Otros","Paquetes de Internet Controlado"],"Incidencia con el uso de los paquetes":["Paquetes de Internet Ilimitado","Paquetes DN","Paquetes Mixtos","Mi Bitel"]},"Recargas y Pagos":{"Problemas con recarga y pagos":["Problemas con pagos en distrubuidor","Otros","Problemas con BBVA","Problemas con BCP","Problemas con BN","Problemas con pagos en distribuidor","Problemas con pagos en tiendas","Problemas con Scotiabank"],"Recarga fisica":["Desbloqueo de tarjeta fisica"]},"Servicio adicionales y aclaracion de saldos":{"Aclaración de saldo en linea postpago":["Consumo incorrecto de llamadas","Consumo incorrecto de MB"],"Aclaración de saldo en linea prepago":["Consumo incorrecto de Basic Balance","Consumo incorrecto de SMS"],"Formas de consultar saldo":["Problemas al consultar por codigo USSD"],"Problemas con llamadas":["Actualizacion de la linea","Configuracion de RED","Problemas con realizar y recibir llamadas a bitel","Problemas con realizar y recibir llamadas a cualquier operador","Problemas con realizar y recibir llamadas a otros operadores","Problemas con realizar y recibir llamadas internacionales"],"Problemas con Navegacion":["Actualizacion de la linea","Correccion de 4G en HLR","Problemas con acceso a internet modem","Problemas con acceso a internet movil","Problemas con lentitud a internet Modem","Problemas con lentitud a internet Movil","Se agrega MI0"],"Problemas con señal":["No tiene señal"],"Problemas con SMS":["Problemas con realizar y recibir SMS a bitel","Problemas con realizar y recibir SMS a cualquier operador","Problemas con realizar y recibir SMS a otros operadores","Problemas con realizar y recibir SMS internacionales"]},"Ticketera":{"Ticketera":["Agencia no cuenta con Fluido Electrico"]},"Transacciones de línea":{"Bloqueo de Equipo":["Bloqueada - No registra en Osiptel","Bloqueo de equipo no vendido","IMEI no registrado en Sistema Customer care - EIR"],"Cancelación de linea":["Cancelación de venta","Cargo fijo incorrecto","Deuda no exigible","Penalidad incorrecta","Penalidad y cargo fijo incorrectas","Resolución de Osiptel y-o carta informativa"],"Cuestionamiento bloqueo Inválidos":["Desbloqueo - IMEI y Linea"],"Desbloqueo de Equipo":["Cliente extranjero","Desbloqueado - No registra en Osiptel","Mala gestion Call Center","Problemas con validacion biometrica","Resolucion de Reclamo","Sistema no genera código de Bloqueo","A solicitud del cliente","Sistema no reconoce código de bloqueo"],"Desbloqueo de Linea Portada":["Deuda con Bitel - Ya pago","Deuda con otro operador - Ya pago"],"Desbloqueo de Línea":["Desbloqueo - Uso Prohibido"],"Entrega de detalle de llamadas":["Detalle de llamadas entrantes - postpago","Detalle de llamadas entrantes - prepago","Detalle de llamadas entrantes y salientes - postpago","Detalle de llamadas entrantes y salientes - prepago","Detalle de llamadas salientes - postpago","Detalle de llamadas salientes - prepago"],"Reactivación de linea":["A solicitud del cliente","Por error de sistema al realizar migracion de Postpago a prepago","Por error de sistema al realizar migracion de Prepago a Postpago"],"Transacciones de línea":["Cambio de número","Cancelar proceso de migracion","Copia de contrato","Migración de Postpago a Postpago","Migración de Postpago a Prepago","Migración de Prepago a Postpago","Migración de Prepago a Prepago","Reposición de SIM"],"Tratamiento de Datos Personales":["Actualizacion de datos - Derechos arco"]}};
 
-    let history = [];
+// CAMPOS EXACTOS POR PLANTILLA (Extracción íntegra del Excel)
+const fieldsMap = {"Paquetes DN":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Paquetes Mixtos":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Paquetes de Internet Controlado":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Paquetes de Internet Ilimitado":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Indicar cuantas barras de señal se muestran en el telefono","Mensaje de Error","Marca y modelo de equipo","Se realizo configuracion de APN: bitel (SI/NO)","Equipo adquirido en Bitel (SI/NO)","Sistema operativo del Dispositivo","Cantidad de KB vigente al momento de escalar","¿Se probo el chip en otro equipo y realizo navegacion? (SI / NO)","Coordenadas","Descartes realizados"],"Paquetes de SMS":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Paquetes de Voz":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Activación BFIX 10":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Activación BFIX 5":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Desactivación BFIX 10":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Desactivación BFIX 5":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Casilla de Voz":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Otros":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"B-comparte":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Mi Bitel":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Desactivación de FF10":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Desactivación de FF3":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Desactivación de FF5":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Error de sistema":["Jefe que autoriza ajuste:","Línea afectada:","Nombres y apellidos del solicitante:","Tipo y número de documento de identidad:","Monto a ajustar (Inc. IGV):","Motivo de ajustes (Error operativo/Sistema):","Periodo afectado:","Número de referencias del cliente:","Descartes realizados:","CAB/agente que gestiona:","Descripción del caso:"],"Bitel":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"Corrección de Blocked Status":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Corrección de OCS y HLR":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Estatus de OCS"],"Barring activo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Corrección de HLR":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Corrección de OCS":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Estatus de OCS"],"Cliente desiste de realizar el pago":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Error de Operativo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No tiene deuda pendiente":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Por reclamo pendiente":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No aplica pago adelantado":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidente con duplicado de recibo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Periodo de recibo afectado","Descripcion del problema","Descartes realizados","Correo electronico"],"No entrega de recibo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Periodo de recibo afectado","Descripcion del problema","Descartes realizados","Correo electronico"],"Problemas con Customer Care":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con Customer Management":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con Mobile Number Portability":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con Payment":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con Sale Management":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Corrección de tipo de documento":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Deuda Incorrecta":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"HLR y OCS activo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Estatus de OCS"],"Mensaje de error por deuda no reflejada":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No muestra razon de conexion":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problema de impresion de contrato":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con Contrato Digital":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Inactive en OCS - Problemas 1ra llamada":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Estatus de OCS"],"Two way Block en OCS - Problemas 1ra llamada":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Estatus de OCS"],"Incidencia al realizar actualizacion de datos CAB - CAB dealer":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar bloqueo y desbloqueo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar cambio de ciclo de faturacion":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"Incidencia al realizar cambio de titularidad":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"Incidencia al realizar cancelacion":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar migracion":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar renovacion":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar suspension temporal":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al realizar union y separacion de contrato":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Incidencia al validar detalle de consumo y llamadas entrantes":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"CM - Monto incorrecto de penalidad":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"PS - Eliminar dinero sobrante":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Colocar item de monto de dinero sobrante en PS (Dinero Sobrante):"],"PS - Eliminar dinero sobrante por cambio de titularidad":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"PS - Hot Charge incorrecto":["Codigo de tienda o canal","Linea que representa el problema","Nombre del cliente","Monto Hot Chargue:","Fecha aproximada de solicito la portabilidad:","Operador a portar:","Descripción de problema:","Descartes realizados:","Adjuntar Imagen del error (SI/NO):"],"PS - Penalidad incorrecta":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Colocar item de monto de ATM en PS (Penalidad incorrecta):"],"PS - Problemas al generar pago":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"Lentitud con el aplicativo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"Problemas con el acceso al aplicativo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"Proceso de recarga":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (Si/No)"],"Actualización de datos de RUC":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Datos que se deben actualizar:"],"Actualización de datos del cliente":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Datos que se deben actualizar:"],"Ingreso de datos del nuevo cliente":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Datos que se deben actualizar:"],"No ha recibido saldo Any Pay":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Alta Nueva":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Migracion":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Portabilidad":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede consultar saldo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Transferencia de anypay a otra cuenta - STA":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No recibio beneficios del Plan postpago Megachip Control":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"No recibio beneficios del plan Giga plus":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"No recibio beneficios del Plan interno":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"No recibio beneficios del Plan postpago Ichip":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"No puede realizar llamadas a Bitel":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede realizar llamadas a otros operadores":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede realizar ni recibir llamadas de Bitel":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede realizar ni recibir llamadas de otros operadores":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede recibir llamadas de Bitel":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No puede recibir llamadas de otros operadores":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Corregir razon de conexión":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"incidencia 0-new":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No registra precio - Marca y modelo del IMEI ingresado":["Codigo de tienda o canal","Linea que representa el problema","Telf. Referencia:","Nombre del cliente:","Ingresar razón de conexión:","Ingresar plan:","Serial de SIM:","Serial de IMEI:","Marca y Modelo:","Mensaje error:","Descripción de problema:","Adjuntar Imagen del error: (obligatorio)","Adjuntar Imagen del error (SI/NO):"],"No se puede ingresar SIM Mobile":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"No se puede ingresar SIM Mobile e IMEI":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"Portabilidad no concretada":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con validacion biometrica":["Codigo de tienda o canal","Linea que representa el problema","Usuario del agente","Nombre del cliente","DNI","Telef. ref. del Agente","Descripcion","Descartes realizados","Adjuntar Imagen del error (SI/NO)"],"Incidencia con cobro de hot charge":["Codigo de tienda o canal","Linea que representa el problema","Nombre del cliente","Monto Hot Chargue:","Fecha aproximada de solicito la portabilidad:","Operador a portar:","Descripción de problema:","Descartes realizados:","Adjuntar Imagen del error (SI/NO):"],"Incidencia con cobro de penalidad":["Codigo de tienda o canal","Linea que representa el problema","Telf. Referencia:","Nombre del cliente:","Monto de penalidad:","Fecha aproximada de solicito la portabilidad:","Operador a portar:","Descripción de problema:","Descartes realizados:","Adjuntar Imagen del error (SI/NO):"],"Linea portada a otro operador pero sigue activa en bitel":["Codigo de tienda o canal","Linea que representa el problema","Telf. Referencia:","Nombre del cliente:","Fecha aproximada de solicito la portabilidad:","Operador que porto:","Descripción de problema:","Descartes realizados:","Adjuntar Imagen del error (SI/NO):"],"Bono de portabilidad":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"No recibe puntos":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Bono de promocion de recarga":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Bono por activacion de linea prepago":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Bono por entrega de recibo":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Periodo de recibo afectado","Descripcion del problema","Descartes realizados","Correo electronico"],"Bono por fidelidad":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Bono recurrente Bdatos":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Bono recurrente Bsmart":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Fecha de activación","Descripcion del problema","Descartes realizados"],"Problemas con pagos en distrubuidor":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con BBVA":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con BCP":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con BN":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con pagos en distribuidor":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con pagos en tiendas":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Problemas con Scotiabank":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha de pago:","Monto de Pago:","Plan:","Telef. ref. del Agente:","Descripcion del problema:","Descartes realizados:"],"Desbloqueo de tarjeta fisica":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Consumo incorrecto de llamadas":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Consumo incorrecto de MB":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Consumo incorrecto de Basic Balance":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Consumo incorrecto de SMS":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Problemas al consultar por codigo USSD":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Actualizacion de la linea":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados","Datos que se deben actualizar:"],"Configuracion de RED":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Indicar cuantas barras de señal se muestran en el telefono","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Cuenta con alguna otra línea que presenta la incidencia","Marca y modelo del equipo","Se realizo configuracion de RED (SI/NO)","Se realizo cambio de SIM (SI/NO)","Al desplazarse a otra posicion, ¿La señal vuelve o no?:","Indicar las coordenadas que encuentra en el Google Maps:","Descartes realizados"],"Problemas con realizar y recibir llamadas a bitel":["Codigo de tienda o canal","Linea que representa el problema","Descripcion: CLIENTE NO PUEDE RECIBIR LLAMADAS DE CUALQUIER OPERADOR (MOVISTAR, CLARO, BITEL, ENTEL), SE VALIDA QUE EL PARAMETRO HRL ESTA EN 7, EL OCS ESTA ACTIVE. SE REALIZARON DIFERENTES MARCACIONES (##002# TANTO  #35*0000#) CORRESPONDIENTES Y SE POBRO EL CHIP EN OTRO EQUIPO Y EL PROBLEMA PERSISTE, TAMBIEN MENCIONA QUE LE PERJUDICA PARA SU LABOR DIARIO YA QUE EL CLIENTE TRABAJA CON SU CELULAR Y LE ES INCOMODO QUE NO LE INGRESEN NINGUNA LLAMADA.","Agente:","Nombres y apellidos del que reporta la incidencia:","DNI / CE / PASAPORTE:","Plan:","RoutingCategory de la línea (3-7-10):","Telefono de Referencia:","Fecha y hora del inconveniente:","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento):","Departamento - Provincia - Distrito - Urbanizacion:","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.):","Mensaje de error:","Marca y modelo de equipo:","Se realizo configuracion de RED (SI/NO):","Equipo adquirido en Bitel (SI/NO):","Cuenta con alguna otra línea que presenta la incidencia:","Indicar cuantas barras de señal se muestran en el telefono:","¿Se probo el chip en otro equipo y si hay servicio? (SI / NO):","Coordenadas:","Descartes realizados: "],"Problemas con realizar y recibir llamadas a cualquier operador":["Codigo de tienda o canal","Linea que representa el problema","Descripcion: CLIENTE NO PUEDE RECIBIR LLAMADAS DE CUALQUIER OPERADOR (MOVISTAR, CLARO, BITEL, ENTEL), SE VALIDA QUE EL PARAMETRO HRL ESTA EN 7, EL OCS ESTA ACTIVE. SE REALIZARON DIFERENTES MARCACIONES (##002# TANTO  #35*0000#) CORRESPONDIENTES Y SE POBRO EL CHIP EN OTRO EQUIPO Y EL PROBLEMA PERSISTE, TAMBIEN MENCIONA QUE LE PERJUDICA PARA SU LABOR DIARIO YA QUE EL CLIENTE TRABAJA CON SU CELULAR Y LE ES INCOMODO QUE NO LE INGRESEN NINGUNA LLAMADA.","Agente:","Nombres y apellidos del que reporta la incidencia:","DNI / CE / PASAPORTE:","Plan:","RoutingCategory de la línea (3-7-10):","Telefono de Referencia:","Fecha y hora del inconveniente:","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento):","Departamento - Provincia - Distrito - Urbanizacion:","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.):","Mensaje de error:","Marca y modelo de equipo:","Se realizo configuracion de RED (SI/NO):","Equipo adquirido en Bitel (SI/NO):","Cuenta con alguna otra línea que presenta la incidencia:","Indicar cuantas barras de señal se muestran en el telefono:","¿Se probo el chip en otro equipo y si hay servicio? (SI / NO):","Coordenadas:","Descartes realizados: "],"Problemas con realizar y recibir llamadas a otros operadores":["Codigo de tienda o canal","Linea que representa el problema","Descripcion: CLIENTE NO PUEDE RECIBIR LLAMADAS DE CUALQUIER OPERADOR (MOVISTAR, CLARO, BITEL, ENTEL), SE VALIDA QUE EL PARAMETRO HRL ESTA EN 7, EL OCS ESTA ACTIVE. SE REALIZARON DIFERENTES MARCACIONES (##002# TANTO  #35*0000#) CORRESPONDIENTES Y SE POBRO EL CHIP EN OTRO EQUIPO Y EL PROBLEMA PERSISTE, TAMBIEN MENCIONA QUE LE PERJUDICA PARA SU LABOR DIARIO YA QUE EL CLIENTE TRABAJA CON SU CELULAR Y LE ES INCOMODO QUE NO LE INGRESEN NINGUNA LLAMADA.","Agente:","Nombres y apellidos del que reporta la incidencia:","DNI / CE / PASAPORTE:","Plan:","RoutingCategory de la línea (3-7-10):","Telefono de Referencia:","Fecha y hora del inconveniente:","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento):","Departamento - Provincia - Distrito - Urbanizacion:","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.):","Mensaje de error:","Marca y modelo de equipo:","Se realizo configuracion de RED (SI/NO):","Equipo adquirido en Bitel (SI/NO):","Cuenta con alguna otra línea que presenta la incidencia:","Indicar cuantas barras de señal se muestran en el telefono:","¿Se probo el chip en otro equipo y si hay servicio? (SI / NO):","Coordenadas:","Descartes realizados: "],"Problemas con realizar y recibir llamadas internacionales":["Codigo de tienda o canal","Linea que representa el problema","Descripcion: CLIENTE NO PUEDE RECIBIR LLAMADAS DE CUALQUIER OPERADOR (MOVISTAR, CLARO, BITEL, ENTEL), SE VALIDA QUE EL PARAMETRO HRL ESTA EN 7, EL OCS ESTA ACTIVE. SE REALIZARON DIFERENTES MARCACIONES (##002# TANTO  #35*0000#) CORRESPONDIENTES Y SE POBRO EL CHIP EN OTRO EQUIPO Y EL PROBLEMA PERSISTE, TAMBIEN MENCIONA QUE LE PERJUDICA PARA SU LABOR DIARIO YA QUE EL CLIENTE TRABAJA CON SU CELULAR Y LE ES INCOMODO QUE NO LE INGRESEN NINGUNA LLAMADA.","Agente:","Nombres y apellidos del que reporta la incidencia:","DNI / CE / PASAPORTE:","Plan:","RoutingCategory de la línea (3-7-10):","Telefono de Referencia:","Fecha y hora del inconveniente:","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento):","Departamento - Provincia - Distrito - Urbanizacion:","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.):","Mensaje de error:","Marca y modelo de equipo:","Se realizo configuracion de RED (SI/NO):","Equipo adquirido en Bitel (SI/NO):","Cuenta con alguna otra línea que presenta la incidencia:","Indicar cuantas barras de señal se muestran en el telefono:","¿Se probo el chip en otro equipo y si hay servicio? (SI / NO):","Coordenadas:","Descartes realizados: "],"Correccion de 4G en HLR":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"Problemas con acceso a internet modem":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Indicar cuantas barras de señal se muestran en el telefono","Mensaje de Error","Marca y modelo de equipo","Se realizo configuracion de APN: bitel (SI/NO)","Equipo adquirido en Bitel (SI/NO)","Sistema operativo del Dispositivo","Cantidad de KB vigente al momento de escalar","¿Se probo el chip en otro equipo y realizo navegacion? (SI / NO)","Coordenadas","Descartes realizados"],"Problemas con acceso a internet movil":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Indicar cuantas barras de señal se muestran en el telefono","Mensaje de Error","Marca y modelo de equipo","Se realizo configuracion de APN: bitel (SI/NO)","Equipo adquirido en Bitel (SI/NO)","Sistema operativo del Dispositivo","Cantidad de KB vigente al momento de escalar","¿Se probo el chip en otro equipo y realizo navegacion? (SI / NO)","Coordenadas","Descartes realizados"],"Problemas con lentitud a internet Modem":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Indicar cuantas barras de señal se muestran en el telefono","Mensaje de Error","Marca y modelo de equipo","Se realizo configuracion de APN: bitel (SI/NO)","Equipo adquirido en Bitel (SI/NO)","Sistema operativo del Dispositivo","Cantidad de KB vigente al momento de escalar","¿Se probo el chip en otro equipo y realizo navegacion? (SI / NO)","Coordenadas","Descartes realizados"],"Problemas con lentitud a internet Movil":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Indicar cuantas barras de señal se muestran en el telefono","Mensaje de Error","Marca y modelo de equipo","Se realizo configuracion de APN: bitel (SI/NO)","Equipo adquirido en Bitel (SI/NO)","Sistema operativo del Dispositivo","Cantidad de KB vigente al momento de escalar","¿Se probo el chip en otro equipo y realizo navegacion? (SI / NO)","Coordenadas","Descartes realizados"],"Se agrega MI0":["Codigo de tienda o canal","Línea que presenta el problema","Nombre del cliente","Fecha y hora que se presenta el problema","Mensaje de error","Telef. ref. del Agente","Telef. ref. del cliente","Descripcion del problema","Descartes realizados"],"No tiene señal":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Indicar cuantas barras de señal se muestran en el telefono","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Cuenta con alguna otra línea que presenta la incidencia","Marca y modelo del equipo","Se realizo configuracion de RED (SI/NO)","Se realizo cambio de SIM (SI/NO)","Al desplazarse a otra posicion, ¿La señal vuelve o no?:","Indicar las coordenadas que encuentra en el Google Maps:","Descartes realizados"],"Problemas con realizar y recibir SMS a bitel":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Problemas con realizar y recibir SMS a cualquier operador":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Problemas con realizar y recibir SMS a otros operadores":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Problemas con realizar y recibir SMS internacionales":["Codigo de tienda o canal","Linea que representa el problema","Descripcion del problema","Agente","Nombres y apellidos del que reporta la incidencia","DNI / CE / PASAPORTE","Plan","RoutingCategory de la línea (3-7-100)","Telefono de Referencia","Fecha y hora del inconveniente","Direccion donde presenta los inconvenientes (con referencia validas, cruce de avenidas, distrito - provincia - departamento)","Departamento - Provincia - Distrito - Urbanizacion","Descripcion del lugar del inconveniente (Edificio, Nro. de Piso, Casa, Sotano, Estacionamiento, etc.)","Mensaje de error","Modelo de equipo","Equipo fue adquirido en Bitel","Se verifico Centro de Mensajería correcto(SI/NO)","Puede enviar y recibir SMS(Especificar)","Tiene saldo para enviar SMS","Numeros del cual no puede enviar y/o recibir Mensaje de Texto(03 mínimos)","¿La incidencia es frecuente u ocasional?","Descartes realizados"],"Agencia no cuenta con Fluido Electrico":["Fecha de inicio del problema:","Datos Código de tienda:","Usuario:","Numero interno:","Observación:"],"Bloqueada - No registra en Osiptel":["Codigo de tienda o canal:","CAB/agente que gestiona:","Linea que presenta el problema:","Nombre del solicitante:","Tipo y número de documento de identidad:","Motivo del bloqueo:","Números de referencias del cliente:","Marca y Modelo de Equipo a Bloquear:","IMEI a Bloquear:"],"Bloqueo de equipo no vendido":["Codigo de tienda o canal:","CAB/agente que gestiona:","Linea que presenta el problema:","Nombre del solicitante:","Tipo y número de documento de identidad:","Motivo del bloqueo:","Números de referencias del cliente:","Marca y Modelo de Equipo a Bloquear:","IMEI a Bloquear:"],"IMEI no registrado en Sistema Customer care - EIR":["Codigo de tienda o canal:","CAB/agente que gestiona:","Linea que presenta el problema:","Nombre del solicitante:","Tipo y número de documento de identidad:","Motivo del bloqueo:","Números de referencias del cliente:","Marca y Modelo de Equipo a Bloquear:","IMEI a Bloquear:"],"Cancelación de venta":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: (detallado)","Fecha máxima de cancelación:","Descartes realizados:"],"Cargo fijo incorrecto":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: (detallado)","Fecha máxima de cancelación:","Descartes realizados:"],"Deuda no exigible":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: (detallado)","Fecha máxima de cancelación:","Descartes realizados:"],"Penalidad incorrecta":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: (detallado)","Fecha máxima de cancelación:","Descartes realizados:"],"Penalidad y cargo fijo incorrectas":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: (detallado)","Fecha máxima de cancelación:","Descartes realizados:"],"Resolución de Osiptel y-o carta informativa":["Codigo de tienda o canal:","Linea que representa el problema:","Usuario del agente solicitante:","Datos completos del abonado:","Ciclo de facturación:","DNI del abonado:","Plan:","Motivo de la cancelación: Por Resolución de Osiptel y/o Carta Informativa - Reclamo: xxx","Fecha máxima de cancelación:"],"Desbloqueo - IMEI y Linea":["Código de usuario:","Línea que presenta el problema:","Fecha y hora en que se presenta el problema:","Nombre del cliente:","DNI del cliente:","DNI de la persona que se acerca:","IMEI:","Modelo de equipo:","Descripción:"],"Cliente extranjero":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Desbloqueado - No registra en Osiptel":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Mala gestion Call Center":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Problemas con validacion biometrica":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Resolucion de Reclamo":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Sistema no genera código de Bloqueo":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"A solicitud del cliente":["Código de tienda:","Código de usuario:","Línea que presenta el problema:","Fecha y hora en que se presenta el problema:","Nombre del cliente:","DNI del cliente:","IMEI:","Descripción:"],"Sistema no reconoce código de bloqueo":["Codigo de tienda o canal:","Jefe autorizador:","Linea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI:","Marca y Modelo:","Pagina de OSIPTEL:","IMEI asociado en EIR:","Numero de referencias del cliente:","Descripcion del caso:","Motivo del desbloqueo: (se detalla el escenario del desbloqueo)","Usuario del error operativo: (solo en escenario de error operativo)"],"Deuda con Bitel - Ya pago":["Codigo de tienda o canal:","Línea que presenta el problema:","Deuda actual en el Customar Care:","Deuda actual en el Payment System:","Descripción de problema:","Descarter realizados: se valida en payment system y costumer care , que la linea no mantiene ninguna deuda solo registra el cambio de titularidad."],"Deuda con otro operador - Ya pago":["Codigo de tienda o canal:","Linea que presenta el problema:","Nombre del cliente:","Fecha y hora que realizo el pago (Adjuntar comprobante): -","Monto que pago:  -","Cliente en base de bloqueo: DEUDA CON OTRA OPERADORA PERO YA PAGO","Telef. ref.:","Descripción de problema: CLIENTE MANIFIESTA QUE EN SU OPERADOR ANTERIOR LE INDICARON QUE NO  TIENE DEUDA POR TAL MOTIVO PRESENTA CONSTANCIA  DE NO ADEUDO.  SOLICITA EL DESBLOQUEO YA QUE MANIFIESTA QUE NO TIENE DEUDA."],"Desbloqueo - Uso Prohibido":["Código de tienda o canal:","Jefe autorizador:","Línea asociada:","Nombres y apellidos del solicitante:","Tipo y numero de documento de identidad:","IMEI válido:","Marca y Modelo:","Numero de referencias del cliente:","Descripción del caso:","Motivo del desbloqueo:"],"Detalle de llamadas entrantes - postpago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Detalle de llamadas entrantes - prepago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Detalle de llamadas entrantes y salientes - postpago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Detalle de llamadas entrantes y salientes - prepago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Detalle de llamadas salientes - postpago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Detalle de llamadas salientes - prepago":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Detalle de llamadas (Entrantes /Salientes):","Fecha de inicio:","Fecha de Fin:","Detallar correo corporativo de Bitel:","Telef. ref. del Agente:","Motivo de la solicitud:"],"Por error de sistema al realizar migracion de Postpago a prepago":["Codigo de tienda o canal:","Linea que presenta el problema:","Datos completos del abonado:","Documento del abonado:","Ciclo de facturacion:","Plan Actual:","Fecha de cancelacion:","Fecha de Reactivacion:","Motivo de Reactivacion:","Error de sistema: SI / NO"],"Por error de sistema al realizar migracion de Prepago a Postpago":["Codigo de tienda o canal:","Linea que presenta el problema:","Datos completos del abonado:","Documento del abonado:","Ciclo de facturacion:","Plan Actual:","Fecha de cancelacion:","Fecha de Reactivacion:","Motivo de Reactivacion:","Error de sistema: SI / NO"],"Cambio de número":["Codigo de tienda o canal:","Nombres y apellidos del solicitante:","Tipo y número de documento de identidad:","Línea del cliente:","Serial:","Plan:","Firmo Solicitud de Operaciones (adjuntar formato):"],"Cancelar proceso de migracion":["Codigo de tienda o canal:","Linea que presenta el problema:","Datos completos del abonado:","Documento del abonado:","Ciclo de facturacion:","Plan Actual:","Plan Nuevo:","Motivo de migración:","Descartes realizados:"],"Copia de contrato":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Fecha y hora que se presenta el problema:","Mensaje de error:","Telef. ref. del Agente:","Telef. ref. del cliente:","Descripcion del problema:  ","Descartes realizados:","Correo a enviar: (Correo corporativo de Bitel)"],"Migración de Postpago a Postpago":["Código de tienda o canal:","Usuario del agente solicitante:","Línea que presenta el problema:","Nombre del cliente:","DNI del cliente:","Descripción del problema:"],"Migración de Postpago a Prepago":["Código de tienda o canal:","Usuario del agente solicitante:","Línea que presenta el problema:","Nombre del cliente:","DNI del titular:","DNI del representante:","Descripción del problema:"],"Migración de Prepago a Postpago":["Codigo de tienda o canal:","Linea que presenta el problema:","Datos completos del abonado:","Documento del abonado:","Ciclo de facturacion:","Plan Actual:","Plan Nuevo:","Motivo de migración:","Descartes realizados:"],"Migración de Prepago a Prepago":["Codigo de tienda o canal:","Linea que presenta el problema:","Datos completos del abonado:","Documento del abonado:","Ciclo de facturacion:","Plan Actual:","Plan Nuevo:","Motivo de migración:","Descartes realizados:"],"Reposición de SIM":["Codigo de tienda o canal:","Linea que presenta el problema:","Nombre del cliente:","Fecha y hora que se presenta el problema:","Mensaje de error:","Serial a Utilizar:","Telef. ref.:","Descripción del problema:","Descartes realizados:"],"Actualizacion de datos - Derechos arco":["Codigo de tienda o canal:","Línea que presenta el problema:","Nombre del cliente:","Fecha y hora que se presenta el problema:","Mensaje de error:","Telef. ref. del Agente:","Telef. ref. del cliente:","Descripcion del problema:","Descartes realizados:","Datos que se deben actualizar:"]};
 
-    function showLevel2(catKey) {
-        const cat = data[catKey];
-        history.push('level1');
-        document.getElementById('level1').classList.add('hidden');
-        const l2 = document.getElementById('level2');
-        l2.innerHTML = '';
-        l2.classList.remove('hidden');
-        document.getElementById('backBtn').classList.remove('hidden');
-        document.getElementById('navigation').innerText = `Inicio > ${cat.title}`;
+// Plantilla por defecto cuando el Python parser no logró hacer match exacto (Fuzzy fallback en Frontend)
+const fallbackFields = ["Codigo de tienda o canal:", "Línea que presenta el problema:", "Nombre del cliente:", "Fecha y hora que se presenta el problema:", "Mensaje de error:", "Telef. ref. del Agente:", "Telef. ref. del cliente:", "Descripcion del problema:", "Descartes realizados:"];
 
-        for (let key in cat.options) {
-            let opt = cat.options[key];
-            let btn = document.createElement('button');
-            btn.className = 'btn-option';
-            btn.innerText = opt.title;
-            btn.onclick = () => showLevel3(catKey, key);
-            l2.appendChild(btn);
+// Lógica de Renderizado
+function renderExcel() {
+    const tbody = document.getElementById('excelBody');
+    tbody.innerHTML = '';
+
+    for (const master in db) {
+        const groups = db[master];
+        let masterRowspan = 0;
+        for (const g in groups) masterRowspan += groups[g].length;
+
+        let isFirstMasterRow = true;
+
+        for (const group in groups) {
+            const types = groups[group];
+            const groupRowspan = types.length;
+            let isFirstGroupRow = true;
+
+            types.forEach(type => {
+                const tr = document.createElement('tr');
+                tr.className = 'type-row';
+                tr.onclick = () => openForm(master, group, type, tr);
+
+                if (isFirstMasterRow) {
+                    tr.innerHTML += `<td rowspan="${masterRowspan}" class="merged-cell">${master}</td>`;
+                    isFirstMasterRow = false;
+                }
+
+                if (isFirstGroupRow) {
+                    tr.innerHTML += `<td rowspan="${groupRowspan}" class="merged-cell">${group}</td>`;
+                    isFirstGroupRow = false;
+                }
+
+                tr.innerHTML += `<td class="type-cell">${type}</td>`;
+                tbody.appendChild(tr);
+            });
         }
     }
+}
 
-    function showLevel3(catKey, subKey) {
-        const sub = data[catKey].options[subKey];
-        history.push('level2');
-        document.getElementById('level2').classList.add('hidden');
-        const l3 = document.getElementById('level3');
-        l3.innerHTML = '';
-        l3.classList.remove('hidden');
-        document.getElementById('navigation').innerText = `Inicio > ${data[catKey].title} > ${sub.title}`;
+function openForm(master, group, type, row) {
+    document.querySelectorAll('.type-row').forEach(r => r.classList.remove('active'));
+    row.classList.add('active');
 
-        for (let key in sub.options) {
-            let opt = sub.options[key];
-            let btn = document.createElement('button');
-            btn.className = 'btn-option';
-            btn.innerText = opt.title;
-            btn.onclick = () => showTemplate(catKey, subKey, key);
-            l3.appendChild(btn);
-        }
-    }
+    document.getElementById('formPanel').classList.add('active');
+    document.getElementById('formTitle').innerText = type;
+    document.getElementById('formPath').innerText = `${master} > ${group}`;
 
-    function showTemplate(catKey, subKey, tempKey) {
-        const temp = data[catKey].options[subKey].options[tempKey];
-        history.push('level3');
-        document.getElementById('level3').classList.add('hidden');
-        document.getElementById('templateContainer').classList.remove('hidden');
-        document.getElementById('templateTitle').innerText = temp.title;
-        document.getElementById('navigation').innerText += ` > ${temp.title}`;
+    const container = document.getElementById('dynamicInputs');
+    container.innerHTML = '';
+    
+    // Obtener los campos específicos. Si no están mapeados literalmente, usar el fallback
+    const fields = fieldsMap[type] || fallbackFields;
 
-        const fieldsDiv = document.getElementById('dynamicFields');
-        fieldsDiv.innerHTML = '';
-        temp.fields.forEach(f => {
-            const group = document.createElement('div');
-            group.className = 'field-group';
-            group.innerHTML = `<label>${f}:</label><input type="text" placeholder="Escriba aquí ${f.toLowerCase()}..." data-label="${f}">`;
-            fieldsDiv.appendChild(group);
-        });
-    }
-
-    function goBack() {
-        const prev = history.pop();
-        document.getElementById('level1').classList.add('hidden');
-        document.getElementById('level2').classList.add('hidden');
-        document.getElementById('level3').classList.add('hidden');
-        document.getElementById('templateContainer').classList.add('hidden');
+    fields.forEach(f => {
+        // Limpiar dos puntos al final para el label si existen
+        const cleanLabel = f.replace(/:$/, '').trim();
+        const div = document.createElement('div');
+        div.className = 'field-group';
         
-        document.getElementById(prev).classList.remove('hidden');
-        if (prev === 'level1') {
-            document.getElementById('backBtn').classList.add('hidden');
-            document.getElementById('navigation').innerText = 'Inicio';
+        // Si el campo requiere explicación extensa, usar Textarea
+        if (cleanLabel.toLowerCase().includes('descripcion') || cleanLabel.toLowerCase().includes('descartes')) {
+            div.innerHTML = `<label>${cleanLabel}</label><textarea rows="3" placeholder="..." data-name="${cleanLabel}"></textarea>`;
+        } else {
+            div.innerHTML = `<label>${cleanLabel}</label><input type="text" placeholder="..." data-name="${cleanLabel}">`;
         }
-    }
-
-    function copyTemplate() {
-        const title = document.getElementById('templateTitle').innerText;
-        let text = `*** REPORTE 9018 - ${title.toUpperCase()} ***\n\n`;
-        const inputs = document.querySelectorAll('#dynamicFields input');
-        inputs.forEach(i => {
-            text += `${i.getAttribute('data-label')}: ${i.value}\n`;
-        });
         
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Plantilla copiada. Pégala en el sistema.");
-        });
-    }
+        container.appendChild(div);
+    });
+}
+
+function copyToClipboard() {
+    const title = document.getElementById('formTitle').innerText;
+    let text = `*** TICKET 9018: ${title.toUpperCase()} ***\n\n`;
+    
+    document.querySelectorAll('#dynamicInputs input, #dynamicInputs textarea').forEach(input => {
+        text += `${input.getAttribute('data-name')}: ${input.value || 'N/A'}\n`;
+    });
+
+    navigator.clipboard.writeText(text).then(() => {
+        alert("¡Copiado con éxito! Pégalo en tu sistema.");
+    });
+}
+
+window.onload = renderExcel;
 </script>
+
 </body>
 </html>
