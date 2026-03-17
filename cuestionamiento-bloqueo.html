@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuestionamiento de Bloqueo</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
       
       /* Estilos para el Título y Botón Superior */
-      .top-bar {
+      .header-principal {
         max-width: 1000px;
         margin: 20px auto;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 10px;
+        padding: 10px;
         font-family: 'Montserrat', sans-serif;
       }
-      .main-title {
+      .titulo-pagina {
         color: #004a99;
         font-weight: 900;
         font-size: 1.8rem;
@@ -27,11 +26,13 @@
       .btn-regresar {
         background-color: #1e293b;
         color: white;
-        padding: 10px 20px;
+        padding: 10px 25px;
         text-decoration: none;
         border-radius: 8px;
         font-weight: 700;
+        font-size: 0.9rem;
         transition: background 0.3s;
+        text-transform: uppercase;
       }
       .btn-regresar:hover {
         background-color: #334155;
@@ -40,9 +41,9 @@
 </head>
 <body style="margin:0; padding:0; background-color: #f4f4f4;">
 
-<div class="top-bar">
-    <h1 class="main-title">Cuestionamiento de Bloqueo</h1>
-    <a href="javascript:history.back()" class="btn-regresar">⬅ Regresar</a>
+<div class="header-principal">
+    <h1 class="titulo-pagina">CUESTIONAMIENTO DE BLOQUEO</h1>
+    <a href="posventa.html" class="btn-regresar">⬅ Volver a Posventa</a>
 </div>
 
 <div style="margin-bottom: 50px;">
@@ -110,7 +111,7 @@
       <div class="s2-status-grid">
         <div class="s2-status-item"><span class="s2-roman-num">I</span> EQUIPO SUSTRAÍDO O PERDIDO PREVALECE SOBRE EL RESTO DE CATEGORÍAS.</div>
         <div class="s2-status-item"><span class="s2-roman-num">II</span> INCUMPLIMIENTO DEL INTERCAMBIO SEGURO PREVALECE SOBRE EL ESTADO DE IMEI ALTERADO</div>
-        <div class="s2-status-item"><span class="s2-roman-num">III</span> IMEI INVALIDO PREVALECE SOBRE IMEI DUPLICADO O CLONADO</div>
+        <div class="s2-status-item"><span class="s2-roman-num">III</span> IMEI INVALIDO PREVALECE SOBRE IMEI DUPLICADO OR CLONADO</div>
       </div>
     </div>
 </div>
