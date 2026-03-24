@@ -167,6 +167,7 @@
             border-radius: 15px;
             font-size: 0.9rem;
             max-width: 80%;
+            line-height: 1.4;
         }
 
         .bot-message {
@@ -261,7 +262,7 @@
                 <i class="fas fa-times close-chat" id="closeChat"></i>
             </div>
             <div class="chat-body" id="chatBody">
-                <div class="message bot-message">¡Hola! Busco información en tiempo real desde la web de Nelyess Capacitación. ¿En qué te ayudo?</div>
+                <div class="message bot-message">¡Hola! Extraigo información de esta página en tiempo real. ¿Sobre qué área quieres saber?</div>
             </div>
             <div class="chat-footer">
                 <input type="text" class="chat-input" id="chatInput" placeholder="Escribe aquí...">
@@ -278,29 +279,6 @@
         const chatInput = document.getElementById('chatInput');
         const chatBody = document.getElementById('chatBody');
 
-        // Esta variable guardará todo el texto de tu página web
-        let baseDeDatosWeb = "";
-
-        // Función para conectarse a tu URL y extraer el contenido
-        async function cargarBaseDeDatos() {
-            try {
-                const respuesta = await fetch('https://miltoncenteno28-jpg.github.io/CapacitacionNelyess/');
-                const html = await respuesta.text();
-                
-                // Convertimos el código HTML en texto legible para el bot
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                
-                // Limpiamos los espacios extras y convertimos a minúsculas
-                baseDeDatosWeb = doc.body.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
-            } catch (error) {
-                console.error("Error al leer la página web:", error);
-            }
-        }
-
-        // Ejecutamos la carga apenas inicia el script
-        cargarBaseDeDatos();
-
         // Controles de la ventana
         chatToggle.addEventListener('click', () => { chatWindow.classList.toggle('active'); });
         closeChat.addEventListener('click', () => { chatWindow.classList.remove('active'); });
@@ -314,37 +292,45 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        // El nuevo cerebro dinámico
+        // Función para leer la página en tiempo real (ignora el texto dentro del propio chat)
+        function obtenerTextoDePagina() {
+            const clonCuerpo = document.body.cloneNode(true);
+            const chatCopia = clonCuerpo.querySelector('.chat-widget');
+            if (chatCopia) chatCopia.remove(); // Eliminamos el chat del clon para no leer los mensajes
+            
+            return clonCuerpo.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
+        }
+
+        // El cerebro dinámico
         function getBotResponse(input) {
             const textoUsuario = input.toLowerCase().trim();
             
             if (textoUsuario === "hola" || textoUsuario === "saludos") {
-                return "¡Hola! Hazme una pregunta y buscaré la respuesta en la información actual de la página.";
+                return "¡Hola! Hazme una pregunta y buscaré la respuesta en la página.";
             }
 
-            if (baseDeDatosWeb === "") {
-                return "Aún estoy conectándome a la base de datos de la página. Intenta en un segundo...";
-            }
+            // Leemos la página justo en el momento en que el usuario pregunta
+            const baseDeDatosWeb = obtenerTextoDePagina();
 
-            // Dividimos lo que el usuario escribió en palabras clave (ignorando palabras muy cortas)
+            // Dividimos lo que el usuario escribió en palabras clave
             const palabrasClave = textoUsuario.split(" ").filter(p => p.length > 3);
             
-            // Buscamos si las palabras del usuario existen en el texto de la página web
+            // Buscamos las palabras clave en el texto de la página
             for (let palabra of palabrasClave) {
                 const indice = baseDeDatosWeb.indexOf(palabra);
                 
                 if (indice !== -1) {
-                    // Si encuentra la palabra, extrae un fragmento de texto alrededor de ella para dar contexto
-                    let inicio = Math.max(0, indice - 30);
-                    let fin = Math.min(baseDeDatosWeb.length, indice + 80);
+                    // Extrae un fragmento de texto alrededor de la coincidencia para dar contexto
+                    let inicio = Math.max(0, indice - 35);
+                    let fin = Math.min(baseDeDatosWeb.length, indice + 75);
                     let extracto = baseDeDatosWeb.substring(inicio, fin);
                     
-                    return `Según la página actual: "...${extracto}..."`;
+                    return `Según la página: "...${extracto.trim()}..."`;
                 }
             }
 
-            // Si el texto del usuario no coincide con nada de lo que hay en la URL:
-            return "Lo siento, esa información no existe en la página web actualmente. Solo respondo en base a la página.";
+            // Si no encuentra nada
+            return "Lo siento, esa información no existe actualmente en esta página. Solo puedo responder en base a lo que se ve aquí.";
         }
 
         // Enviar mensaje
