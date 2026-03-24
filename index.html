@@ -346,18 +346,48 @@
         }
 
         // --- SISTEMA DE BASE DE DATOS LOCAL ---
-        // Obtenemos los usuarios guardados o creamos un arreglo vacío si es la primera vez
         let usuariosDB = JSON.parse(localStorage.getItem('nelyess_usuarios')) || [];
+
+        // --- SISTEMA DE INACTIVIDAD (30 MINUTOS) ---
+        let temporizadorSesion;
+        const TIEMPO_LIMITE = 30 * 60 * 1000; // 30 minutos en milisegundos
+
+        function reiniciarTemporizador() {
+            // Solo reiniciamos el temporizador si el usuario está dentro del portal principal
+            if (portalPrincipal.classList.contains('activa')) {
+                clearTimeout(temporizadorSesion);
+                temporizadorSesion = setTimeout(cerrarSesionPorInactividad, TIEMPO_LIMITE);
+            }
+        }
+
+        function cerrarSesionPorInactividad() {
+            if (portalPrincipal.classList.contains('activa')) {
+                alert("Tu sesión ha expirado por inactividad de 30 minutos. Por favor, vuelve a ingresar.");
+                cerrarSesion();
+            }
+        }
+
+        function cerrarSesion() {
+            clearTimeout(temporizadorSesion);
+            document.getElementById('form-login').reset();
+            cambiarPantalla(pantallaLogin);
+        }
+
+        // Detectar actividad del usuario para mantener la sesión viva
+        window.addEventListener('mousemove', reiniciarTemporizador);
+        window.addEventListener('keypress', reiniciarTemporizador);
+        window.addEventListener('click', reiniciarTemporizador);
+        window.addEventListener('scroll', reiniciarTemporizador);
+
 
         // --- REGISTRO DE USUARIO ---
         document.getElementById('form-registro').addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita que la página recargue
+            e.preventDefault();
 
             const nombre = document.getElementById('reg-nombre').value.trim();
             const dni = document.getElementById('reg-dni').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
 
-            // Validar si el DNI ya existe
             const usuarioExiste = usuariosDB.find(user => user.dni === dni);
 
             if (usuarioExiste) {
@@ -366,13 +396,11 @@
             } else {
                 document.getElementById('error-registro').style.display = 'none';
                 
-                // Guardar nuevo usuario
                 usuariosDB.push({ nombre: nombre, dni: dni, password: pass });
                 localStorage.setItem('nelyess_usuarios', JSON.stringify(usuariosDB));
 
                 document.getElementById('exito-registro').style.display = 'block';
 
-                // Limpiar formulario y mandar al login después de 1.5 segundos
                 setTimeout(() => {
                     document.getElementById('form-registro').reset();
                     cambiarPantalla(pantallaLogin);
@@ -387,27 +415,21 @@
             const dni = document.getElementById('login-dni').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
 
-            // Buscar si coincide el DNI y la contraseña
             const usuarioValido = usuariosDB.find(user => user.dni === dni && user.password === pass);
 
             if (usuarioValido) {
                 document.getElementById('error-login').style.display = 'none';
-                
-                // Mostrar el nombre del usuario en el portal
                 document.getElementById('nombre-usuario-activo').textContent = usuarioValido.nombre;
                 
-                // Mostrar el portal principal
-                document.getElementById('form-login').reset();
                 cambiarPantalla(portalPrincipal);
+                reiniciarTemporizador(); // Iniciamos el conteo de los 30 minutos al entrar
             } else {
                 document.getElementById('error-login').style.display = 'block';
             }
         });
 
-        // --- CERRAR SESIÓN ---
-        document.getElementById('btn-cerrar-sesion').addEventListener('click', function() {
-            cambiarPantalla(pantallaLogin);
-        });
+        // --- CERRAR SESIÓN MANUAL ---
+        document.getElementById('btn-cerrar-sesion').addEventListener('click', cerrarSesion);
     </script>
 </body>
 </html>
