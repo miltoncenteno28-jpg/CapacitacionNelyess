@@ -348,27 +348,45 @@
         // --- SISTEMA DE BASE DE DATOS LOCAL ---
         let usuariosDB = JSON.parse(localStorage.getItem('nelyess_usuarios')) || [];
 
-        // --- SISTEMA DE INACTIVIDAD (30 MINUTOS) ---
+        // --- SISTEMA DE INACTIVIDAD Y PERSISTENCIA DE SESIÓN ---
         let temporizadorSesion;
         const TIEMPO_LIMITE = 30 * 60 * 1000; // 30 minutos en milisegundos
 
+        // Verificar si ya hay una sesión iniciada al cargar la página
+        window.addEventListener('load', function() {
+            const sesionActiva = JSON.parse(localStorage.getItem('nelyess_sesion_activa'));
+            const ultimaActividad = localStorage.getItem('nelyess_ultima_actividad');
+
+            if (sesionActiva && ultimaActividad) {
+                const tiempoInactivo = Date.now() - parseInt(ultimaActividad);
+                
+                // Si la sesión existe y no han pasado 30 min, restaurar acceso
+                if (tiempoInactivo < TIEMPO_LIMITE) {
+                    document.getElementById('nombre-usuario-activo').textContent = sesionActiva.nombre;
+                    cambiarPantalla(portalPrincipal);
+                    reiniciarTemporizador();
+                } else {
+                    // Si pasaron los 30 min mientras la página estaba cerrada
+                    cerrarSesion(false);
+                }
+            }
+        });
+
         function reiniciarTemporizador() {
-            // Solo reiniciamos el temporizador si el usuario está dentro del portal principal
             if (portalPrincipal.classList.contains('activa')) {
+                localStorage.setItem('nelyess_ultima_actividad', Date.now()); // Actualizar última actividad
                 clearTimeout(temporizadorSesion);
-                temporizadorSesion = setTimeout(cerrarSesionPorInactividad, TIEMPO_LIMITE);
+                temporizadorSesion = setTimeout(() => cerrarSesion(true), TIEMPO_LIMITE);
             }
         }
 
-        function cerrarSesionPorInactividad() {
-            if (portalPrincipal.classList.contains('activa')) {
+        function cerrarSesion(mostrarAlerta = false) {
+            if (mostrarAlerta && portalPrincipal.classList.contains('activa')) {
                 alert("Tu sesión ha expirado por inactividad de 30 minutos. Por favor, vuelve a ingresar.");
-                cerrarSesion();
             }
-        }
-
-        function cerrarSesion() {
             clearTimeout(temporizadorSesion);
+            localStorage.removeItem('nelyess_sesion_activa'); // Eliminar sesión activa
+            localStorage.removeItem('nelyess_ultima_actividad'); // Eliminar registro de actividad
             document.getElementById('form-login').reset();
             cambiarPantalla(pantallaLogin);
         }
@@ -378,7 +396,6 @@
         window.addEventListener('keypress', reiniciarTemporizador);
         window.addEventListener('click', reiniciarTemporizador);
         window.addEventListener('scroll', reiniciarTemporizador);
-
 
         // --- REGISTRO DE USUARIO ---
         document.getElementById('form-registro').addEventListener('submit', function(e) {
@@ -421,15 +438,19 @@
                 document.getElementById('error-login').style.display = 'none';
                 document.getElementById('nombre-usuario-activo').textContent = usuarioValido.nombre;
                 
+                // Guardar la sesión y el momento en que entró
+                localStorage.setItem('nelyess_sesion_activa', JSON.stringify(usuarioValido));
+                localStorage.setItem('nelyess_ultima_actividad', Date.now());
+
                 cambiarPantalla(portalPrincipal);
-                reiniciarTemporizador(); // Iniciamos el conteo de los 30 minutos al entrar
+                reiniciarTemporizador(); 
             } else {
                 document.getElementById('error-login').style.display = 'block';
             }
         });
 
         // --- CERRAR SESIÓN MANUAL ---
-        document.getElementById('btn-cerrar-sesion').addEventListener('click', cerrarSesion);
+        document.getElementById('btn-cerrar-sesion').addEventListener('click', () => cerrarSesion(false));
     </script>
 </body>
 </html>
