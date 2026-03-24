@@ -262,7 +262,7 @@
                 <i class="fas fa-times close-chat" id="closeChat"></i>
             </div>
             <div class="chat-body" id="chatBody">
-                <div class="message bot-message">¡Hola! Extraigo información de esta página en tiempo real. ¿Sobre qué área quieres saber?</div>
+                <div class="message bot-message">¡Hola! Busco respuestas en el contenido de esta página. ¿Qué deseas saber? (Ej. "ERP", "Ventas", "Soporte")</div>
             </div>
             <div class="chat-footer">
                 <input type="text" class="chat-input" id="chatInput" placeholder="Escribe aquí...">
@@ -279,7 +279,6 @@
         const chatInput = document.getElementById('chatInput');
         const chatBody = document.getElementById('chatBody');
 
-        // Controles de la ventana
         chatToggle.addEventListener('click', () => { chatWindow.classList.toggle('active'); });
         closeChat.addEventListener('click', () => { chatWindow.classList.remove('active'); });
 
@@ -292,43 +291,66 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        // Extrae las frases completas de la página para respuestas más limpias
-        function obtenerLineasDePagina() {
-            const clonCuerpo = document.body.cloneNode(true);
-            const chatCopia = clonCuerpo.querySelector('.chat-widget');
-            if (chatCopia) chatCopia.remove(); // Ignora el texto del propio chat
-            
-            // Divide el texto visible de la página en líneas separadas
-            return clonCuerpo.innerText.split('\n')
-                .map(linea => linea.trim())
-                .filter(linea => linea.length > 3); // Ignora líneas vacías o muy cortas
+        // Función clave: Elimina tildes y pasa todo a minúsculas para que las búsquedas no fallen
+        function normalizarTexto(texto) {
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
         }
 
-        // El cerebro dinámico mejorado
-        function getBotResponse(input) {
-            const textoUsuario = input.toLowerCase().trim();
+        // Extrae todo el texto visible de la página (títulos, párrafos y botones) dinámicamente
+        function obtenerDatosDeLaPagina() {
+            const elementos = document.querySelectorAll('h1, p, span');
+            let datos = [];
             
-            if (textoUsuario === "hola" || textoUsuario === "saludos") {
-                return "¡Hola! Hazme una pregunta y buscaré la respuesta en la página.";
+            elementos.forEach(el => {
+                const texto = el.textContent.trim();
+                // Verificamos que no lea el texto dentro del propio chat
+                if (texto.length > 2 && !el.closest('.chat-widget') && !datos.includes(texto)) {
+                    datos.push(texto);
+                }
+            });
+            return datos;
+        }
+
+        // El cerebro que busca coincidencias
+        function getBotResponse(input) {
+            const inputNormalizado = normalizarTexto(input);
+            
+            if (inputNormalizado.includes("hola") || inputNormalizado.includes("saludo")) {
+                return "¡Hola! Pregúntame sobre lo que ves en pantalla y buscaré la información.";
             }
 
-            // Obtenemos las líneas de texto actualizadas
-            const lineasWeb = obtenerLineasDePagina();
-            const palabrasClave = textoUsuario.split(" ").filter(p => p.length > 3);
-            
-            // Buscamos si alguna palabra clave coincide con una línea de la web
-            for (let palabra of palabrasClave) {
-                const lineaEncontrada = lineasWeb.find(linea => linea.toLowerCase().includes(palabra));
-                
-                if (lineaEncontrada) {
-                    return `En la página encontré esto: "${lineaEncontrada}"`;
+            // Palabras que no aportan valor a la búsqueda
+            const ignorar = ["que", "como", "cual", "para", "por", "los", "las", "del", "una", "con", "esto"];
+            // Ahora acepta palabras de 3 letras o más (ej: ERP)
+            const palabrasClave = inputNormalizado.split(" ").filter(p => p.length > 2 && !ignorar.includes(p));
+
+            if (palabrasClave.length === 0) {
+                return "Por favor, especifica un poco más tu pregunta basada en la página.";
+            }
+
+            const datosWeb = obtenerDatosDeLaPagina();
+            let coincidencias = [];
+
+            // Compara cada palabra clave del usuario con el texto de la página
+            for (let dato of datosWeb) {
+                const datoNormalizado = normalizarTexto(dato);
+                for (let palabra of palabrasClave) {
+                    if (datoNormalizado.includes(palabra)) {
+                        if (!coincidencias.includes(dato)) {
+                            coincidencias.push(dato);
+                        }
+                    }
                 }
             }
 
-            return "Lo siento, esa información no existe actualmente en esta página. Solo puedo responder en base a lo que se ve aquí.";
+            if (coincidencias.length > 0) {
+                return "Según esta página: " + coincidencias.join(" | ");
+            }
+
+            return "No encontré información sobre eso en la página. Intenta preguntar por 'Ventas', 'Posventa', 'Guía' o 'ERP'.";
         }
 
-        // Enviar mensaje
+        // Función para enviar
         function handleSend() {
             const text = chatInput.value.trim();
             if (text === '') return;
@@ -336,7 +358,6 @@
             addMessage(text, 'user');
             chatInput.value = '';
 
-            // Pequeño retraso para que se sienta natural
             setTimeout(() => {
                 const response = getBotResponse(text);
                 addMessage(response, 'bot');
