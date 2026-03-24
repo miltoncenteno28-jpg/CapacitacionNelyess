@@ -18,93 +18,321 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        /* Fondo con gradiente suave para que el efecto cristal resalte */
         body { 
             font-family: Verdana, Arial, Helvetica, sans-serif; 
-            background-color: var(--bg-page); 
+            background: linear-gradient(135deg, #e2e8df 0%, #f0f2f5 100%);
             color: var(--text-dark); 
-            line-height: 1.5; 
+            line-height: 1.6; 
             padding-bottom: 50px;
+            min-height: 100vh;
         }
 
-        /* NAVEGACIÓN */
-        .nav-top { background: var(--forest); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        .btn-back { color: white; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: 'Segoe UI', sans-serif; }
+        /* NAVEGACIÓN (Efecto Cristal) */
+        .nav-top { 
+            background: rgba(58, 90, 64, 0.85); /* --forest con transparencia */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-back { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 0.9rem; 
+            font-family: 'Segoe UI', sans-serif; 
+        }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 40px; }
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+            display: flex; 
+            flex-direction: column; 
+        }
 
-        /* ESTILO DE ENCABEZADOS ORIGINALES (SUPERPUESTOS) */
-        .section-header-wrapper { position: relative; align-self: flex-start; margin-bottom: 20px; margin-top: 10px; }
-        .section-header-bg { position: absolute; background-color: var(--salvia); border-radius: 20px; bottom: -4px; left: 5px; right: -10px; top: 4px; z-index: 1; }
-        .section-header-text { position: relative; background-color: var(--forest); color: #ffffff; padding: 10px 30px; border-radius: 0 25px 25px 0; font-size: clamp(16px, 3.5vw, 22px); font-weight: 700; z-index: 2; margin-left: -20px; display: inline-block; letter-spacing: 0.5px; text-transform: uppercase; }
-
-        .bloque-seccion { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-c); }
-
-        /* LISTAS DE INFORMACIÓN */
-        .info-list { display: flex; flex-direction: column; gap: 14px; font-size: clamp(14px, 2.2vw, 16px); text-align: justify; margin-bottom: 20px; }
-        .info-list strong { color: var(--forest); font-weight: 700; }
-
-        /* FLUJOGRAMA ORIGINAL */
-        .flowchart { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        .step-box { background-color: var(--cream); border: 1px solid var(--border-c); padding: 15px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; color: var(--text-dark); box-shadow: 2px 2px 8px rgba(58, 90, 64, 0.08); border-radius: 6px; }
-
-        /* CAJAS DE INSTRUCCIÓN Y CALLOUTS */
-        .instructions-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .instruction-box { font-size: 13.5px; line-height: 1.6; background: #FFFFFF; padding: 15px; border-radius: 10px; border-left: 5px solid var(--salvia); text-align: justify; display: flex; align-items: center; }
+        /* --- ESTILOS DEL ACORDEÓN (Efecto Cristal) --- */
+        .accordion {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: var(--forest);
+            cursor: pointer;
+            padding: 20px 25px;
+            width: 100%;
+            text-align: left;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(31, 38, 135, 0.05);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .accordion:hover {
+            background: rgba(255, 255, 255, 0.65);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 90, 64, 0.1);
+        }
+        .accordion.active {
+            background: rgba(58, 90, 64, 0.85); /* --forest translúcido */
+            color: white;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+            border-color: rgba(58, 90, 64, 0.3);
+        }
+        .accordion::after {
+            content: '\25BC'; 
+            font-size: 0.8em;
+            color: var(--forest);
+            transition: transform 0.3s ease;
+        }
+        .accordion.active::after {
+            transform: rotate(-180deg);
+            color: white;
+        }
         
-        .callout-box { background-color: var(--cream); border: 2px solid var(--salvia); border-radius: 8px; padding: 20px; box-shadow: 2px 4px 10px rgba(58, 90, 64, 0.08); font-size: 14px; font-style: italic; text-align: justify; margin-top: 15px; }
+        .panel {
+            display: none; 
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-top: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            animation: fadein 0.4s ease-out;
+        }
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* IMÁGENES ZOOMABLES */
-        .image-preview-top, .image-box { width: 100%; border: 1px solid var(--border-c); border-radius: 8px; overflow: hidden; cursor: zoom-in; box-shadow: 2px 2px 8px rgba(58, 90, 64, 0.08); text-align: center; background: var(--cream); padding: 10px; margin: 15px 0; transition: 0.3s; }
-        .image-preview-top:hover, .image-box:hover { transform: scale(1.01); border-color: var(--forest); }
-        .image-preview-top img, .image-box img { width: 100%; max-width: 1000px; display: block; margin: 0 auto; }
+        /* --- TARJETAS DE INFORMACIÓN (Efecto Cristal) --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .info-card {
+            background: rgba(249, 251, 247, 0.55); /* --cream translúcido */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-left: 5px solid var(--forest);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(58, 90, 64, 0.1);
+        }
+        .card-orange { border-left-color: #D4A373; }
+        .card-red { border-left-color: #E07A5F; }
+        .card-green { border-left-color: #81B29A; }
 
-        /* GRID DE PASOS E IMÁGENES */
-        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .step-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; align-items: center; margin-bottom: 20px; }
-        .step-row.reverse { grid-template-columns: 1fr 1.5fr; }
+        .info-card h3 {
+            margin-top: 0;
+            color: var(--forest);
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .info-card p {
+            margin: 0;
+            text-align: justify;
+            font-size: 0.95em;
+        }
 
-        /* REQUISITOS CANAL PRESENCIAL */
-        .req-item { font-size: 15px; display: flex; margin-bottom: 15px; text-align: justify; }
-        .req-number { font-weight: 700; margin-right: 10px; color: var(--forest); }
-        .req-content { display: flex; flex-direction: column; gap: 6px; }
-        .sub-text { color: #526A54; font-size: 0.9em; }
+        /* --- LISTAS ENUMERADAS (Efecto Cristal) --- */
+        ol.custom-list {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            gap: 15px;
+            margin: 0;
+        }
+        ol.custom-list li {
+            position: relative;
+            padding-left: 50px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding-top: 15px;
+            padding-bottom: 15px;
+            padding-right: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            font-size: 0.95em;
+            text-align: justify;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        ol.custom-list li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(163, 177, 138, 0.85); /* --salvia translúcido */
+            color: #ffffff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-        /* PLANTILLA DE AVERÍA ORIGINAL */
-        .plantilla-card { background: var(--cream); border: 1px solid var(--border-c); border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .linea-campo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid #F0F2E8; }
+        /* --- ESTRUCTURA DEL TRÍPTICO (PASO 4) --- */
+        .paso4-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .paso4-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Imágenes */
+        .manual-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(58, 90, 64, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            margin-top: 15px;
+            display: block;
+        }
+        .zoomable-img {
+            cursor: zoom-in;
+            transition: 0.3s;
+        }
+        .zoomable-img:hover {
+            transform: scale(1.02);
+            border-color: var(--forest);
+        }
+        .zoom-hint {
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--forest);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* --- TU PLANTILLA DE AVERÍA (Efecto Cristal) --- */
+        .plantilla-card { 
+            background: rgba(249, 251, 247, 0.45); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7); 
+            border-radius: 15px; 
+            padding: 25px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04); 
+        }
+        .linea-campo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(163, 177, 138, 0.3); }
         .etiqueta { font-size: 13.5px; font-weight: 700; color: var(--forest); min-width: 250px; }
-        input, textarea { flex: 1; min-width: 250px; border: none; background: #FFF; border-bottom: 1px solid var(--salvia); padding: 4px 10px; font-family: inherit; font-size: 14px; outline: none; }
-        input:focus, textarea:focus { background: #F1F5E9; border-bottom: 2px solid var(--forest); }
-        input::placeholder, textarea::placeholder { color: var(--salvia); font-style: italic; font-size: 12.5px; }
+        input, textarea { flex: 1; min-width: 250px; border: none; background: transparent; border-bottom: 1px solid var(--salvia); padding: 4px 10px; font-family: inherit; font-size: 14px; outline: none; }
+        input:focus, textarea:focus { background: rgba(255, 255, 255, 0.6); border-bottom: 2px solid var(--forest); border-radius: 4px 4px 0 0;}
+        input::placeholder, textarea::placeholder { color: #8a9973; font-style: italic; font-size: 12.5px; }
 
         .btn-group { margin-top: 25px; display: flex; gap: 15px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-copy { background-color: var(--forest); color: white; }
-        .btn-copy:hover { background-color: #588157; transform: translateY(-2px); }
-        .btn-clear { background-color: #E9EDC9; color: var(--forest); }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: inherit;}
+        .btn-copy { background-color: var(--forest); color: white; box-shadow: 0 4px 10px rgba(58, 90, 64, 0.2); }
+        .btn-copy:hover { background-color: #588157; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(58, 90, 64, 0.3); }
+        .btn-clear { background-color: rgba(233, 237, 201, 0.8); color: var(--forest); backdrop-filter: blur(5px);}
+        .btn-clear:hover { background-color: rgba(204, 213, 174, 0.9); }
 
-        /* TABLA DE ESTADOS ORIGINAL */
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; box-shadow: 2px 4px 12px rgba(58, 90, 64, 0.08); border: 1px solid var(--border-c); margin-top: 15px; }
-        .status-table { width: 100%; border-collapse: collapse; min-width: 700px; background-color: #ffffff; }
-        .status-table th { background-color: var(--salvia); color: #1A241B; font-size: 15px; font-weight: 700; text-align: center; padding: 15px; border-bottom: 2px solid var(--forest); }
-        .status-table td { padding: 15px; border-bottom: 1px solid #E1E8D5; font-size: 14px; vertical-align: middle; }
-        .status-table td:first-child { font-weight: 600; color: var(--forest); background-color: var(--cream); width: 35%; border-right: 1px solid #E1E8D5; }
+        /* --- TABLA (Efecto Cristal) --- */
+        .table-responsive { 
+            width: 100%; 
+            overflow-x: auto; 
+            border-radius: 8px; 
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            margin-top: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .status-table { width: 100%; border-collapse: collapse; min-width: 700px; background: transparent; }
+        .status-table th { 
+            background: rgba(163, 177, 138, 0.7); /* --salvia translúcido */
+            backdrop-filter: blur(8px);
+            color: #111; 
+            font-size: 15px; 
+            font-weight: 700; 
+            text-align: center; 
+            padding: 15px; 
+            border-bottom: 2px solid rgba(58, 90, 64, 0.5); 
+        }
+        .status-table td { 
+            padding: 15px; 
+            border-bottom: 1px solid rgba(163, 177, 138, 0.3); 
+            font-size: 14px; 
+            vertical-align: middle; 
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(5px);
+        }
+        .status-table td:first-child { 
+            font-weight: 600; 
+            color: var(--forest); 
+            background: rgba(249, 251, 247, 0.45); 
+            width: 35%; 
+            border-right: 1px solid rgba(163, 177, 138, 0.3); 
+        }
         .status-table td:last-child { width: 65%; text-align: justify; }
-        .status-table tbody tr:hover td { background-color: #F2F5EB; }
+        .status-table tbody tr:hover td { background: rgba(255, 255, 255, 0.65); }
 
-        /* MODAL PARA ZOOM */
-        .modal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 15, 10, 0.95); align-items: center; justify-content: center; flex-direction: column; }
-        .modal-content { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; animation: zoomIn 0.3s ease; }
-        .close-btn { position: absolute; top: 15px; right: 25px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        /* MODAL PARA ZOOM ORIGINAL */
+        .modal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 15, 10, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; }
+        .modal-content { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; animation: zoomIn 0.3s ease; box-shadow: 0 5px 30px rgba(0,0,0,0.5);}
+        .close-btn { position: absolute; top: 15px; right: 35px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
         .close-btn:hover { color: var(--salvia); }
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+        /* RESPONSIVE */
+        @media (max-width: 950px) {
+            .paso4-layout { grid-template-columns: 1fr; }
+            .paso4-center { margin: 20px 0; }
+        }
         @media (max-width: 768px) {
-            .flowchart { grid-template-columns: 1fr; }
-            .content-grid, .step-row, .step-row.reverse { grid-template-columns: 1fr; }
-            .instructions-container { grid-template-columns: 1fr; }
-            .step-row.reverse .callout-box { order: 2; }
-            .step-row.reverse .image-box { order: 1; }
+            .linea-campo { flex-direction: column; align-items: flex-start; }
+            .etiqueta { margin-bottom: 5px; }
+            input, textarea { width: 100%; }
+            .accordion { font-size: 1em; padding: 15px; }
+            .btn-group { flex-direction: column; }
         }
     </style>
 </head>
@@ -112,47 +340,66 @@
 
     <nav class="nav-top">
         <a href="posventa.html" class="btn-back"><i class="fas fa-arrow-left"></i> VOLVER AL INICIO</a>
-        <span style="color: white; font-weight: bold; font-family: 'Segoe UI', sans-serif;">CALIDAD-AVERIA</span>
+        <span style="color: white; font-weight: bold; font-family: 'Segoe UI', sans-serif; letter-spacing: 1px;">CALIDAD-AVERIA</span>
     </nav>
 
     <div class="container">
 
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text">CONDICIONES GENERALES</div>
-            </div>
-            <div class="info-list">
-                <p><strong>¿Qué es?:</strong> Procedimiento previo al reclamo de calidad de primera instancia que inicia un usuario cuando desee reportar problemas con la calidad del servicio.</p>
-                <p><strong>¿Cuándo aplica?:</strong> Cuando el usuario desee reportar cualquier problema con la calidad del servicio.</p>
-                <p><strong>¿Qué deberá realizar el agente?:</strong> En estos casos, se deberá registrar el reporte en el BCCS y se emitirá una constancia con el código asignado.</p>
-                <p><strong>¿Cuál es el plazo de atención?:</strong> 1 día calendario, 2 días calendario para servicios fijos instalados en centros poblados rurales, + 1 día calendario adicional cuando el usuario no se hubiera encontrado durante la visita y no se hubiera solucionado.</p>
-            </div>
-            <div class="flowchart">
-                <div class="step-box"><span><strong>1.</strong> Detección del inconveniente (debe estar versado a problemas de calidad del servicio).</span></div>
-                <div class="step-box"><span><strong>2.</strong> Detección del tipo de servicio y validación de datos.</span></div>
-                <div class="step-box"><span><strong>3.</strong> Realización de descartes básicos identificando que el problema no sea del equipo.</span></div>
-                <div class="step-box"><span><strong>4.</strong> Acceso a la opción de reporte del BCCS (en el servicio problema).</span></div>
-                <div class="step-box"><span><strong>5.</strong> Completar la información requerida por el BCCS.</span></div>
-                <div class="step-box"><span><strong>6.</strong> El sistema enviará la constancia vía SMS.</span></div>
+        <button class="accordion">ℹ️ Información General</button>
+        <div class="panel">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📝 ¿Qué es?</h3>
+                    <p>Procedimiento previo al reclamo de calidad de primera instancia que inicia un usuario cuando desee reportar problemas con la calidad del servicio.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🎯 ¿Cuándo aplica?</h3>
+                    <p>Cuando el usuario desee reportar cualquier problema con la calidad del servicio.</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>💻 ¿Qué deberá realizar el agente?</h3>
+                    <p>En estos casos, se deberá registrar el reporte en el BCCS y se emitirá una constancia con el código asignado.</p>
+                </div>
+
+                <div class="info-card card-orange">
+                    <h3>⏱️ ¿Cuál es el plazo de atención?</h3>
+                    <p>“El plazo de atención de su reporte por calidad o avería es de 1 día calendario para centros poblados urbanos y de 2 días calendarios en centros poblados rurales. Este plazo podrá extenderse por un (1) día calendario adicional, siempre que el usuario no se hubiere encontrado durante la visita realizada por la empresa operadora; y, debido a ello, no se hubiere resuelto el problema del servicio.”</p>
+                </div>
+
+                <div class="info-card card-red">
+                    <h3>⚠️ ¿Qué paso realizar si no se soluciona?</h3>
+                    <p>Asimismo, le recordamos que en caso no brinde su conformidad con la solución brindada o el inconveniente persista al concluir los plazos antes señalados, generaremos de forma automática un reclamo por calidad e idoneidad en la prestación del servicio, dicho reclamo mantendrá el código de su reporte por PROBLEMAS DE CALIDAD Y AVERIA generado inicialmente y tendrá un plazo para la resolución de 03 días hábiles y de 5 días hábiles adicionales para la notificación.”</p>
+                </div>
+
+                <div class="info-card card-green">
+                    <h3>🔍 ¿Dónde realizar seguimiento al reclamo?</h3>
+                    <p>Por otro lado le recordamos que podrá acceder al expediente del reclamo por calidad e idoneidad desde nuestra plataforma de expediente virtual. La misma que se encuentra publicada en nuestra página web <a href="http://www.bitel.com.pe" target="_blank" style="color:var(--forest); font-weight:bold;">www.bitel.com.pe</a>. Esta información la podrá visualizar en un plazo no mayor a 3 días hábiles. Para su primer acceso, podrá usar su número de documento de identidad como usuario y contraseña. Posteriormente, le recomendamos actualizar su clave, si considera necesario.”</p>
+                </div>
             </div>
         </div>
 
-        <div class="bloque-seccion">
-            <h1 style="font-size: clamp(20px, 4vw, 26px); font-weight: 800; color: var(--forest); text-transform: uppercase; border-bottom: 3px solid #E9EDC9; padding-bottom: 10px; text-align: center; margin-bottom: 20px;">Registro del Reporte de Avería en el BCCS</h1>
-            
-            <div style="background: #F1F5E9; padding: 20px; border-radius: 15px; border: 1px solid var(--border-c); margin-bottom: 20px;">
-                <div class="instructions-container">
-                    <div class="instruction-box">Para completar estos campos, se le indicará al cliente: "En caso su reporte de avería sea elevado a un reclamo, ¿Por qué medio de notificación le gustaría recibir su respuesta: Físico o virtual?"</div>
-                    <div class="instruction-box">El correo electrónico y la dirección solicitada en estos campos se empleará para la etapa de elevación a un reclamo en caso suceda.</div>
-                </div>
-                <div class="image-preview-top" onclick="openModal('https://i.postimg.cc/nhJC8bBs/Captura-de-pantalla-2026-03-06-153844.png')">
-                    <img src="https://i.postimg.cc/nhJC8bBs/Captura-de-pantalla-2026-03-06-153844.png" alt="Guía BCCS">
-                </div>
-            </div>
+        <button class="accordion">📋 LOS REQUISITOS Y LO QUE DEBES SABER ANTES DE INICIAR EL REGISTRO</button>
+        <div class="panel">
+            <ol class="custom-list" style="counter-reset: step-counter 0;">
+                <li>Nombres y apellidos completos del usuario o razón de social del Reclamante.</li>
+                <li>Tipo de documento del abonado reclamante (DNI, C.E., PASAPORTE o RUC).En los casos de clientes con documento RUC o para representantes la vía de presentación del mismo será mediante CAB.</li>
+                <li>Número o código de servicio afectado.</li>
+                <li>Datos de contacto, Número telefónico de contacto.Correo electrónico de contacto.</li>
+                <li>Dirección en la cual se presenta el problema de calidad y/o avería.Se debe detallar la dirección, ubigeo, departamento, provincia, distrito y centro poblado.</li>
+                <li>Ubicación georreferenciada.Debe incluir las coordenadas geográficas (longitud y latitud), del centro poblado donde se presente el problema.</li>
+                <li>Detalle del problema.</li>
+                <li>Fecha y hora de inicio aproximada del problema.</li>
+                <li>No es necesario la validación biométrica.</li>
+                <li>no será necesario que el cliente firme algún documento</li>
+            </ol>
+        </div>
 
+        <button class="accordion">✍️ Plantilla de Escalado de Avería</button>
+        <div class="panel">
             <div class="plantilla-card">
-                <form id="averiaForm" style="display: flex; flex-direction: column; gap: 12px;">
+                <form id="averiaForm" style="display: flex; flex-direction: column; gap: 8px;">
                     <div class="linea-campo">
                         <span class="etiqueta">• Jefe/Supervisor aprobador del reporte:</span>
                         <input type="text" id="c1" placeholder="nombre del agente que esta subiendo la averia">
@@ -206,151 +453,88 @@
                         <textarea id="c13" rows="3" placeholder="Describa la incidencia aquí de manera detallada..."></textarea>
                     </div>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-copy" onclick="copyAction()">Copiar Plantilla</button>
+                        <button type="button" class="btn btn-copy" id="btnCopiar" onclick="copyAction()">Copiar Plantilla</button>
                         <button type="button" class="btn btn-clear" onclick="if(confirm('¿Borrar datos?')) document.getElementById('averiaForm').reset()">Limpiar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text" style="font-size: clamp(16px, 3vw, 20px);">REQUISITOS DE PRESENTACIÓN EN EL CANAL PRESENCIAL</div>
+        <button class="accordion">💻 REGISTRO DEL REPORTE DE AVERÍA EN EL BCCS</button>
+        <div class="panel">
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 20px auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 1</h4>
+                <p>En el portal de Bitel ingresaremos al link "de atención al cliente".</p>
+                <img src="https://i.postimg.cc/vHYkjcZb/image.png" alt="Menú Sistema BCCS" class="manual-img">
             </div>
-            <div style="font-size: clamp(16px, 3vw, 20px); font-weight: 600; margin-bottom: 20px;">Los reportes por calidad o avería presentados por los abonados deben contener los siguientes requisitos:</div>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <div class="req-item"><span class="req-number">1.</span><div class="req-content">Nombres y apellidos completos del usuario o razón de social del Reclamante.</div></div>
-                <div class="req-item"><span class="req-number">2.</span>
-                    <div class="req-content">
-                        <span>Tipo y número del documento legal de identificación del usuario (Documento Nacional de Identidad, Carné de Extranjería, o Registro Único de Contribuyentes, según corresponda). En los reportes presentados por representante debe consignarse, adicionalmente, los datos de éste, así como el poder correspondiente, conforme a lo dispuesto en los artículos 26 y 27.</span>
-                        <span class="sub-text">Tipo de documento del abonado reclamante (DNI, C.E., PASAPORTE o RUC).</span>
-                        <span class="sub-text">En los casos de clientes con documento RUC o para representantes la vía de presentación del mismo será mediante CAB.</span>
+
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 20px auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 2</h4>
+                <p>* seleccionamos la opción de "respuesta al cliente", escogemos posterior si es "prepago o pos pago", Ilenamos el número del cliente y número de DNI, por último "buscar".</p>
+                <img src="https://i.postimg.cc/XvrZ4fnq/image.png" alt="Búsqueda de Suscriptor" class="manual-img">
+            </div>
+
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 20px auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 3</h4>
+                <p>* nos ubicamos en la parte final de la búsqueda y seleccionamos "historia de quejas" y luego damos clic en "iniciar Registro" se apertura otra venta para continuar con el proceso.</p>
+                <img src="https://i.postimg.cc/JhX1pP1y/image.png" alt="Iniciar Registro" class="manual-img">
+            </div>
+
+            <div class="info-card" style="margin-bottom: 20px;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 15px;">Paso 4: Llenado de Información</h4>
+                <div class="paso4-layout">
+                    <div>
+                        <ol class="custom-list" style="counter-reset: step-counter 0;">
+                            <li>En el cuadro de color anaranjado llenaremos tal cual teniendo en cuenta esta ruta: Reclamo - Reclamo por avería - Seleccionar el tipo de servicio (Prepago, Postpago, Internet Móvil, Internet Fijo) - Avería - Elegir de acuerdo al problema reportado y los datos del cliente, lo demás será igual a la imagen.</li>
+                            <li>Cuadro marrón, en "Contenido de queja/reclamación" debe ir breve resumen del agente y en "Mayor información del agente" pegamos la plantilla que llenamos.</li>
+                            <li>Cuadro amarillo debemos escoger siempre "Showroom-CAB DEALER".</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="paso4-center">
+                        <img src="https://i.postimg.cc/zvcZzrd3/Sin-titulo.jpg" alt="Formulario de Avería" class="manual-img zoomable-img" onclick="openModal(this.src)">
+                        <p class="zoom-hint">Haga clic en la imagen para ampliar</p>
+                    </div>
+
+                    <div>
+                        <ol class="custom-list" style="counter-reset: step-counter 3;">
+                            <li>Cuadro azul en "complain Number" pondremos solo el mismo numero del cliente y en "centro poblado" damos clic en "select" para ubicar el lugar exacto del problema.</li>
+                            <li>Cuadro rojo ponemos la latitud y longitud que ya previamente llenamos en la plantilla.</li>
+                            <li>Cuadro verde llenaremos la fecha en que se le presento el problema al cliente y la hora en formato de 24 horas.</li>
+                            <li>Por último daremos clic en la opción guardar que esta en el cuadro celeste.</li>
+                        </ol>
                     </div>
                 </div>
-                <div class="req-item"><span class="req-number">3.</span><div class="req-content">Número o código de servicio afectado.</div></div>
-                <div class="req-item"><span class="req-number">4.</span>
-                    <div class="req-content">
-                        <span>Datos de contacto.</span>
-                        <span class="sub-text">Número telefónico de contacto.</span>
-                        <span class="sub-text">Correo electrónico de contacto.</span>
-                    </div>
-                </div>
-                <div class="req-item"><span class="req-number">5.</span>
-                    <div class="req-content">
-                        <span>Dirección en la cual se presenta el problema de calidad y/o avería.</span>
-                        <span class="sub-text">Se debe detallar la dirección, ubigeo, departamento, provincia, distrito y centro poblado.</span>
-                    </div>
-                </div>
-                <div class="req-item"><span class="req-number">6.</span>
-                    <div class="req-content">
-                        <span>Ubicación georreferenciada.</span>
-                        <span class="sub-text">Debe incluir las coordenadas geográficas (longitud y latitud), del centro poblado donde se presente el problema.</span>
-                    </div>
-                </div>
-                <div class="req-item"><span class="req-number">7.</span><div class="req-content">Detalle del problema.</div></div>
-                <div class="req-item"><span class="req-number">8.</span><div class="req-content">Fecha y hora de inicio aproximada del problema.</div></div>
+            </div>
+
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 20px auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 5</h4>
+                <p>* volvemos a “Historia de queja” y seleccionamos</p>
+                <img src="https://i.postimg.cc/G28d4Kf3/image.png" alt="Historia de queja" class="manual-img">
+            </div>
+
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 20px auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 6</h4>
+                <p>* Aquí podremos validar que se haya subido de manera correcta y ver el código del reporte.</p>
+                <img src="https://i.postimg.cc/pXD1Vzhh/Captura-de-pantalla-2026-03-06-160259.png" alt="Código del reporte" class="manual-img">
+            </div>
+
+            <div class="info-card" style="max-width: 850px; margin: 0 auto 0 auto;">
+                <h4 style="color:var(--forest); font-weight:bold; margin-bottom: 5px;">Paso 7</h4>
+                <p>* Por último en “historia de suscriptores” validaremos que se envió el SMS al cliente. Ese código será la constancia que el cliente recibirá de que el proceso ya está realizado, se podrá retirar y esperar los plazos.</p>
+                <img src="https://i.postimg.cc/6QGZwLqj/Captura-de-pantalla-2026-03-06-160630.png" alt="Validación SMS" class="manual-img">
             </div>
         </div>
 
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text">REGISTRO DEL REPORTE DE AVERÍA EN EL BCCS</div>
-            </div>
-            
-            <div class="content-grid">
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div class="info-list" style="margin-bottom:0;">
-                        Para el registro del reporte por avería en el Customer Care se debe seguir la siguiente ruta: <strong>Reclamo – Reclamo por avería – Seleccionar el tipo de servicio (Prepago, Postpago, Internet Móvil, Internet Fijo) – Avería – Elegir de acuerdo al problema reportado.</strong>
-                    </div>
-                    <div class="image-box" onclick="openModal('https://i.postimg.cc/9FsYZSG4/Captura-de-pantalla-2026-03-06-150800.png')">
-                        <img src="https://i.postimg.cc/9FsYZSG4/Captura-de-pantalla-2026-03-06-150800.png" alt="Ruta BCCS">
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div class="info-list" style="margin-bottom:0;">
-                        Se debe completar la información de la persona que reporta la avería de acuerdo a la condición de reclamante (Titular, usuario o representante).
-                    </div>
-                    <div class="image-box" onclick="openModal('https://i.postimg.cc/BQFK9vK9/Captura-de-pantalla-2026-03-06-151136.png')">
-                        <img src="https://i.postimg.cc/BQFK9vK9/Captura-de-pantalla-2026-03-06-151136.png" alt="Datos BCCS">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text">REGISTRO DEL REPORTE DE AVERÍA EN EL BCCS</div>
-            </div>
-            
-            <div class="step-row">
-                <div class="image-box" onclick="openModal('https://i.postimg.cc/XJpwZSs1/Captura-de-pantalla-2026-03-06-155407.png')">
-                    <img src="https://i.postimg.cc/XJpwZSs1/Captura-de-pantalla-2026-03-06-155407.png" alt="Coordenadas BCCS">
-                </div>
-                <div class="callout-box">
-                    Los campos “centro poblado”, “problema de longitud” y “problema de latitud”, se completarán al llenar la información que solicita presionando la opción “select”.
-                </div>
-            </div>
-
-            <div class="step-row reverse">
-                <div class="callout-box">
-                    Se abrirá una nueva ventana, en donde solicitará ingresar el departamento, provincia y distrito, luego de ello, se debe presionar “Search” y aparecerá el listado de centros poblados, en el cual se seleccionará el señalado por el cliente, presionando en “Select”.
-                </div>
-                <div class="image-box" onclick="openModal('https://i.postimg.cc/G3v4XmTY/Captura-de-pantalla-2026-03-06-155629.png')">
-                    <img src="https://i.postimg.cc/G3v4XmTY/Captura-de-pantalla-2026-03-06-155629.png" alt="Búsqueda de centros poblados">
-                </div>
-            </div>
-        </div>
-
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text">ENTREGA DEL CÓDIGO DE REPORTE Y CONSTANCIA</div>
-            </div>
-            
-            <div class="info-list">
-                <p>Una vez generado el reporte de calidad o avería, procederemos a mencionar los plazos y a brindar el código que se le envió vía SMS:</p>
-                <p>“El plazo de atención de su reporte por calidad o avería es de 1 día calendario para centros poblados urbanos y de 2 días calendarios en centros poblados rurales. Este plazo podrá extenderse por un (1) día calendario adicional, siempre que el usuario no se hubiere encontrado durante la visita realizada por la empresa operadora; y, debido a ello, no se hubiere resuelto el problema del servicio.”</p>
-                <p>Asimismo, le recordamos que en caso no brinde su conformidad con la solución brindada o el inconveniente persista al concluir los plazos antes señalados, generaremos de forma automática un reclamo por calidad e idoneidad en la prestación del servicio, dicho reclamo mantendrá el código de su reporte por problemas de calidad y avería generado inicialmente y tendrá un plazo para la resolución de 03 días hábiles y de 5 días hábiles adicionales para la notificación.</p>
-                <p>Por otro lado le recordamos que podrá acceder al expediente del reclamo por calidad e idoneidad desde nuestra plataforma de expediente virtual. La misma que se encuentra publicada en nuestra página web www.bitel.com.pe. Esta información la podrá visualizar en un plazo no mayor a 3 días hábiles. Para su primer acceso, podrá usar su número de documento de identidad como usuario y contraseña. Posteriormente, le recomendamos actualizar su clave, si considera necesario.”</p>
-            </div>
-            
-            <div class="image-box" onclick="openModal('https://i.postimg.cc/pXD1Vzhh/Captura-de-pantalla-2026-03-06-160259.png')">
-                <img src="https://i.postimg.cc/pXD1Vzhh/Captura-de-pantalla-2026-03-06-160259.png" alt="Tabla de reporte BCCS">
-            </div>
-
-            <div class="info-list" style="margin-top: 30px;">
-                <p>La constancia de la presentación del reporte de calidad o avería es enviada por SMS, al número ingresado previamente, y se visualiza en el Customer Care:</p>
-            </div>
-            <div class="image-box" onclick="openModal('https://i.postimg.cc/6QGZwLqj/Captura-de-pantalla-2026-03-06-160630.png')">
-                <img src="https://i.postimg.cc/6QGZwLqj/Captura-de-pantalla-2026-03-06-160630.png" alt="Emisión de constancia SMS">
-            </div>
-        </div>
-
-        <div class="bloque-seccion">
-            <div class="section-header-wrapper">
-                <div class="section-header-bg"></div>
-                <div class="section-header-text">ENTREGA DE INFORMACIÓN ANTE CONSULTAS DE LOS ESTADOS DE REPORTES PRESENTADOS</div>
-            </div>
-            
-            <div class="info-list">
-                <p>Primero se debe validar el estado del reporte de avería, ubicando la tipificación del reporte de avería en el Customer Care:</p>
-            </div>
-            <div class="image-box" onclick="openModal('https://i.postimg.cc/vmMyHGZV/Captura-de-pantalla-2026-03-06-161226.png')">
-                <img src="https://i.postimg.cc/vmMyHGZV/Captura-de-pantalla-2026-03-06-161226.png" alt="Consulta de estados BCCS">
-            </div>
-            <div class="callout-box" style="align-self: flex-end; max-width: 600px; margin-left: auto;">
-                Después de los tres numerales (###), se encuentra el estado de la reporte por avería, y es la información a entregar al cliente.
-            </div>
-
-            <div class="table-responsive" style="margin-top: 30px;">
+        <button class="accordion">💬 RESPUESTAS POR PARTE DEL AREA</button>
+        <div class="panel">
+            <div class="table-responsive">
                 <table class="status-table">
                     <thead>
-                        <tr><th>Estado</th><th>Información</th></tr>
+                        <tr>
+                            <th>Estado</th>
+                            <th>Información</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
@@ -406,7 +590,21 @@
     </div>
 
     <script>
-        // Función para copiar los 13 campos del formulario
+        // --- LÓGICA DEL ACORDEÓN ---
+        const accordions = document.querySelectorAll(".accordion");
+        accordions.forEach(acc => {
+            acc.addEventListener("click", function() {
+                this.classList.toggle("active");
+                const panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        });
+
+        // --- LÓGICA COPIAR PLANTILLA ---
         function copyAction() {
             const labels = [
                 "• Jefe/Supervisor aprobador del reporte:", "• Acreditó condición:", 
@@ -418,25 +616,32 @@
             ];
             let finalText = "";
             for(let i=1; i<=13; i++) {
-                const val = document.getElementById('c'+i).value;
+                const val = document.getElementById('c'+i).value.trim();
                 finalText += `${labels[i-1]} ${val}\n`;
             }
-            const area = document.createElement("textarea");
-            area.value = finalText;
-            document.body.appendChild(area);
-            area.select();
-            document.execCommand("copy");
-            document.body.removeChild(area);
-            alert("¡Plantilla copiada al portapapeles!");
+            
+            navigator.clipboard.writeText(finalText).then(() => {
+                const btn = document.getElementById('btnCopiar');
+                const textoOriginal = btn.innerHTML;
+                btn.innerHTML = '✅ ¡Copiado!';
+                btn.style.backgroundColor = '#27ae60';
+                
+                setTimeout(() => {
+                    btn.innerHTML = textoOriginal;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            }).catch(err => {
+                alert('Hubo un error al copiar. Por favor, selecciona y copia manualmente.');
+            });
         }
 
-        // Funciones para el Modal de Zoom
+        // --- LÓGICA MODAL DE ZOOM ---
         function openModal(src) {
             const modal = document.getElementById("imageModal");
             const img = document.getElementById("zoomedImg");
             modal.style.display = "flex";
             img.src = src;
-            document.body.style.overflow = "hidden"; // Evita que la página haga scroll atrás
+            document.body.style.overflow = "hidden"; // Evita scroll
         }
 
         function closeModal() {
