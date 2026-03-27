@@ -125,7 +125,6 @@
     </div>
 
     <script>
-        // JS rigurosamente limpio de espacios invisibles para GitHub Pages
         let masterData = []; 
         const currentYear = new Date().getFullYear();
 
@@ -361,13 +360,25 @@
                         let lunchTime = 0;
                         let excessLunch = 0;
                         let workedMins = 0;
+                        
+                        // Lógica de meta diaria general
                         let targetMins = 540; 
-
                         if (record.dayIndex === 6) targetMins = 360; 
                         if (record.dayIndex === 0) targetMins = 480; 
 
+                        // NUEVA LÓGICA: Excepción de jornada (5 horas) para Cindy y Kelida
+                        let empNameUpper = record.nombre.toUpperCase().trim();
+                        let isJornadaEspecial = (empNameUpper === "CINDY YAHAIRA INFANZON YUPANQUI" || empNameUpper === "KELIDA ROMERO PALOMINO");
+
+                        if (isJornadaEspecial) {
+                            targetMins = 300; // 5 horas clavadas sin importar el día
+                        }
+
                         if (record.entrada !== "-" && record.inicioDescanso !== "-" && record.finDescanso === "-" && record.salida === "-") {
-                            targetMins = (record.dayIndex === 0) ? 480 : 300;
+                            // Ajuste si faltan marcaciones de salida
+                            if (!isJornadaEspecial) {
+                                targetMins = (record.dayIndex === 0) ? 480 : 300;
+                            }
                             workedMins = minInicioDescanso - minEntrada;
                             if (workedMins < 0) workedMins += 24 * 60;
                         } 
@@ -401,7 +412,9 @@
 
                         let dailyBalance = 0;
                         if(workedMins > 0) {
-                            dailyBalance = workedMins - targetMins;
+                            // Mantenemos tu cambio anterior: sumamos lunchTime a workedMins 
+                            // para anular el impacto del almuerzo en el balance (día).
+                            dailyBalance = (workedMins + lunchTime) - targetMins;
                             weekTargetMins += targetMins;
                         }
 
@@ -518,7 +531,6 @@
                     let fechaActual = new Date();
                     let fechaStr = `LUGAR Y FECHA DE EMISIÓN: Ayacucho, ${fechaActual.toLocaleDateString('es-PE')} a las ${fechaActual.toLocaleTimeString('es-PE')}`;
 
-                    // Extraer los trabajadores únicos del HTML usando los data-attributes agregados
                     let empNames = [];
                     document.querySelectorAll('#tableBody tr[data-emp]').forEach(tr => {
                         let emp = tr.getAttribute('data-emp');
@@ -532,13 +544,11 @@
                         return;
                     }
 
-                    // Iterar por trabajador para armar hojas separadas
                     empNames.forEach((emp, index) => {
                         if (index > 0) {
                             doc.addPage();
                         }
 
-                        // Cabeceras repetitivas por cada hoja
                         doc.setFontSize(14);
                         doc.setFont("helvetica", "bold");
                         doc.text("REPORTE OFICIAL DE ASISTENCIA Y CONTROL DE JORNADAS", doc.internal.pageSize.width / 2, 40, { align: "center" });
@@ -551,7 +561,6 @@
                         doc.setFont("helvetica", "bold");
                         doc.text(`RESUMEN GLOBAL:   Días Evaluados: ${tDias}   |   Horas Efectivas: ${tHoras}   |   Exceso Descanso: ${tExceso}   |   Balance: ${tBalance}`, 40, 105);
 
-                        // Crear la estructura HTML temporal SOLO para el empleado en curso
                         let tempTable = document.createElement('table');
                         tempTable.appendChild(document.querySelector('#mainTable thead').cloneNode(true));
                         let tempBody = document.createElement('tbody');
@@ -560,7 +569,6 @@
                             tempBody.appendChild(tr.cloneNode(true));
                         });
 
-                        // Agregar el Gran Total al final de la última persona en imprimir
                         if (index === empNames.length - 1) {
                             let trTotal = document.querySelector('#tableBody tr[data-emp="TOTAL"]');
                             if (trTotal) tempBody.appendChild(trTotal.cloneNode(true));
@@ -578,9 +586,8 @@
                                 if (data.row.raw && data.row.raw.textContent) {
                                     let txt = data.row.raw.textContent.toUpperCase();
                                     if (txt.includes("RESUMEN")) {
-                                        // Coloración resaltada para el resumen semanal como solicitaste
-                                        data.cell.styles.fillColor = [254, 240, 138]; // Tono amarillo pastel muy notorio
-                                        data.cell.styles.textColor = [15, 23, 42]; // Letra oscura
+                                        data.cell.styles.fillColor = [254, 240, 138]; 
+                                        data.cell.styles.textColor = [15, 23, 42]; 
                                         data.cell.styles.fontStyle = 'bold';
                                     }
                                     if (txt.includes("TOTAL GENERAL")) {
@@ -592,10 +599,8 @@
                             }
                         });
 
-                        // Colocar la línea de firma enfocada en ese único trabajador
                         let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 50 : 150; 
                         
-                        // Si la firma no entra en la página, pasarlo a la siguiente
                         if (finalY + 80 > doc.internal.pageSize.height - 40) {
                             doc.addPage();
                             finalY = 60;
@@ -603,7 +608,7 @@
 
                         let pageWidth = doc.internal.pageSize.width;
                         let signatureWidth = 200;
-                        let currentX = (pageWidth - signatureWidth) / 2; // Firma siempre centrada al final de SU hoja
+                        let currentX = (pageWidth - signatureWidth) / 2; 
 
                         doc.setDrawColor(0);
                         doc.setLineWidth(1);
