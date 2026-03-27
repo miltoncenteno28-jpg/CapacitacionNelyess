@@ -366,7 +366,6 @@
                         if (record.dayIndex === 6) targetMins = 360; 
                         if (record.dayIndex === 0) targetMins = 480; 
 
-                        // NUEVA LÓGICA: Excepción de jornada (5 horas) para Cindy y Kelida
                         let empNameUpper = record.nombre.toUpperCase().trim();
                         let isJornadaEspecial = (empNameUpper === "CINDY YAHAIRA INFANZON YUPANQUI" || empNameUpper === "KELIDA ROMERO PALOMINO");
 
@@ -374,8 +373,8 @@
                             targetMins = 300; // 5 horas clavadas sin importar el día
                         }
 
+                        // LÓGICA DE HORAS TRABAJADAS (COLUMNA "EFECTIVAS")
                         if (record.entrada !== "-" && record.inicioDescanso !== "-" && record.finDescanso === "-" && record.salida === "-") {
-                            // Ajuste si faltan marcaciones de salida
                             if (!isJornadaEspecial) {
                                 targetMins = (record.dayIndex === 0) ? 480 : 300;
                             }
@@ -410,11 +409,37 @@
                             }
                         }
 
+                        // NUEVA LÓGICA DE CÁLCULO DE BALANCE
                         let dailyBalance = 0;
-                        if(workedMins > 0) {
-                            // Mantenemos tu cambio anterior: sumamos lunchTime a workedMins 
-                            // para anular el impacto del almuerzo en el balance (día).
-                            dailyBalance = (workedMins + lunchTime) - targetMins;
+                        let balanceCalculated = false;
+
+                        if (isJornadaEspecial) {
+                            // Empleados 5h: Se evalúa desde la Entrada hasta el Inicio del Descanso
+                            if (record.entrada !== "-" && record.inicioDescanso !== "-") {
+                                let diff = minInicioDescanso - minEntrada;
+                                if (diff < 0) diff += 24 * 60;
+                                dailyBalance = diff - targetMins;
+                                balanceCalculated = true;
+                            } else if (workedMins > 0) {
+                                // Respaldo si no marcaron descanso pero sí trabajaron
+                                dailyBalance = workedMins - targetMins;
+                                balanceCalculated = true;
+                            }
+                        } else {
+                            // Resto de empleados: Se evalúa desde la Entrada hasta la Salida, menos 120 mins
+                            if (record.entrada !== "-" && record.salida !== "-") {
+                                let diff = minSalida - minEntrada;
+                                if (diff < 0) diff += 24 * 60;
+                                dailyBalance = (diff - 120) - targetMins;
+                                balanceCalculated = true;
+                            } else if (workedMins > 0) {
+                                // Respaldo si faltan marcas intermedias pero sí trabajaron
+                                dailyBalance = (workedMins + lunchTime) - targetMins;
+                                balanceCalculated = true;
+                            }
+                        }
+
+                        if (balanceCalculated) {
                             weekTargetMins += targetMins;
                         }
 
@@ -440,7 +465,7 @@
                                 <td class="p-3 text-center ${excessLunch > 0 ? 'text-orange-700 font-bold bg-orange-50/50' : 'text-slate-400'}">${excessLunch > 0 ? excessLunch + ' min' : '-'}</td>
                                 <td class="p-3 text-center font-bold text-slate-800">${formatMinsToHHMM(workedMins)}</td>
                                 <td class="p-3 text-center text-slate-500">${formatMinsToHHMM(targetMins)}</td>
-                                <td class="p-3 text-center ${balanceClass}">${workedMins > 0 ? balanceText : '-'}</td>
+                                <td class="p-3 text-center ${balanceClass}">${balanceCalculated ? balanceText : '-'}</td>
                             </tr>
                         `;
                     });
